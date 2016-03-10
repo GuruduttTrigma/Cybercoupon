@@ -1,0 +1,254 @@
+<?php  echo $this->Html->script('backend/development/tablesorter.js');?>
+<style>
+.pagination > li:first-child > a, .pagination > li:first-child > span {
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    margin-left: 0;
+}
+.pagination > li > a, .pagination > li > span {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #428bca;
+    float: left;
+    line-height: 1.42857;
+    margin-left: -1px;
+    padding: 6px 12px;
+    position: relative;
+    text-decoration: none;
+}
+.result-found-text {
+    color: green;
+    float: right;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 10px 0 ;
+}
+</style>
+<script id="js">$(function(){
+	var pagerOptions = {
+		container: $(".pager"),
+		ajaxUrl: null,
+		ajaxProcessing: function(ajax){
+			if (ajax && ajax.hasOwnProperty('data')) {
+				return [ ajax.data, ajax.total_rows ];
+			}
+		},
+		updateArrows: true,
+		page: 0,
+		size: 10,
+
+		removeRows: false,
+
+		cssNext: '.next', // next page arrow
+		cssPrev: '.prev', // previous page arrow
+		cssFirst: '.first', // go to first page arrow
+		cssLast: '.last', // go to last page arrow
+		cssGoto: '.gotoPage', // select dropdown to allow choosing a page
+
+		cssPageDisplay: '.pagedisplay', // location of where the "output" is displayed  pagedisplay
+		cssPageSize: '.pagesize', 
+		cssDisabled: 'disabled' 
+	};
+
+	$("table")
+		.tablesorter({
+			theme: 'blue',
+			widgets: ['zebra']
+		})
+		.bind('pagerChange pagerComplete pagerInitialized pageMoved', function(e, c){
+			var msg = '" event triggered, ' + (e.type === 'pagerChange' ? 'going to' : 'now on') +
+				' page ' + (c.page + 1) + '/' + c.totalPages;
+			$('#display')
+				.append('<li>"' + e.type + msg + '</li>')
+				.find('li:first').remove();
+		})
+		.tablesorterPager(pagerOptions);
+		$('button:contains(Add)').click(function(){
+			// add two rows
+			var row = '<tr><td>StudentXX</td><td>Mathematics</td><td>male</td><td>33</td><td>39</td><td>54</td><td>73</td><td><button class="remove" title="Remove this row">X</button></td></tr>' +
+				'<tr><td>StudentYY</td><td>Mathematics</td><td>female</td><td>83</td><td>89</td><td>84</td><td>83</td><td><button class="remove" title="Remove this row">X</button></td></tr>',
+				$row = $(row);
+			$('table')
+				.find('tbody').append($row)
+				.trigger('addRows', [$row]);
+		});
+
+		$('table').delegate('button.remove', 'click' ,function(){
+			var t = $('table');
+			$(this).closest('tr').remove();
+			t.trigger('update');
+		});
+
+		$('button:contains(Destroy)').click(function(){
+			var $t = $(this);
+			if (/Destroy/.test( $t.text() )){
+				$('table').trigger('destroy.pager');
+				$t.text('Restore Pager');
+			} else {
+				$('table').tablesorterPager(pagerOptions);
+				$t.text('Destroy Pager');
+			}
+		});
+
+		$('.toggle').click(function(){
+			var mode = /Disable/.test( $(this).text() );
+			$('table').trigger( (mode ? 'disable' : 'enable') + '.pager');
+			$(this).text( (mode ? 'Enable' : 'Disable') + 'Pager');
+		});
+		$('table').bind('pagerChange', function(){
+			// pager automatically enables when table is sorted.
+			$('.toggle').text('Disable Pager');
+		});
+$(".tablesorter-header").append('<span class="ui-icon ui-icon-carat-2-n-s"></span>');
+$(".rmv_sort").children("span").removeClass('ui-icon');
+$(".rmv_sort").children("span").css("margin-top",'12px');
+});
+
+</script>
+        <div class="result-found-text">
+			<?php echo $deal_count;?> Results Found
+	</div>
+	<div id="page-content">
+	<div id="page-content-wrapper" style="padding:0; margin:0; background:0; box-shadow:0 0 0 0 #fff;">
+		<div class="hastable">
+			<table id="sort-table"> 
+				<thead> 
+					<tr>
+                        <th style="width:auto;">Name</th>
+                        <th style="width:auto;">Company Name</th>
+                        <th style="width:auto;">Buy From</th>
+                        <th style="width:auto;">Buy To</th> 
+                        <!--<th style="width:auto;">Redeeming From</th>
+                        <th style="width:auto;">Redeeming To</th>-->
+                        <th style="width:auto;">Category</th>     
+                        <th style="width:auto;">Active</th>   
+						<?php
+						if($subadmin_type==1 || @$modulepermissions['Deals']['module_edit']==1 ) 
+						{ 		  
+					    ?>
+                        <th style="width: 160px;" class="rmv_sort">Action</th> 
+						<?php 
+						}
+						?>
+					</tr> 
+				</thead> 
+				<tbody> 
+				
+					<?php	
+					//pr($member);die;
+							$currentDate = date('Y-m-d'); 
+					if(!empty($member))
+					{					
+						foreach($member as $data)
+						{	
+					?>
+					     <tr>
+	                    <td><?php echo $data['Deal']['name']?></td>
+	                    	<td><?php echo @$data['Member']['MemberMeta']['company_name'] ;?></td>
+	                     <td><?php echo date('d M Y: H m ',strtotime($data['Deal']['buy_from'])); ?></td>       
+	                     <td><?php echo date('d M Y',strtotime($data['Deal']['buy_to'])); ?></td>
+	                     <td><?php echo $data['DealCategory']['name']; ?></td> 
+							<td>
+								<?php
+								if(strtotime($data['Deal']['redeem_from']) < strtotime(date("Y-m-d")) && strtotime($data['Deal']['redeem_to']) < strtotime(date("Y-m-d")))
+								{
+									if($data['Deal']['active'] =='Yes')
+									{
+										echo "Active".' <em style="color:#999;">(Redeem date expired)</em>';
+									}
+									else
+									{
+										echo "Inactive".' <em style="color:#999;">(Redeem date expired)</em>';
+									}
+									
+								}
+								else
+								{
+									if($data['Deal']['active'] =='Yes')
+									{
+										echo "Active";
+									}
+									else
+									{
+										echo "Inactive";
+									}
+								   
+								}
+								?>
+							</td> 
+							<?php
+								if($subadmin_type==1|| @$modulepermissions['Deals']['module_edit']==1 ) 
+								{ 
+							?>		
+	                     	<td>
+	                            <?php $newsid = base64_encode(convert_uuencode($data['Deal']['id'])); ?>
+	                            <a title="View" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT.'admin/Manages/view_Deal/'.$newsid; ?>">	
+	                            <span class="ui-icon ui-icon-search"></span>
+	                            </a>
+	                            <a title="Edit" href="<?php echo HTTP_ROOT.'admin/Manages/editDeal/'.$newsid; ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip">
+	                                    <span class="ui-icon ui-icon-pencil"></span>
+	                            </a>
+	                            <a title="Delete" class="delRec btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Manages/deleteDeal/".$newsid; ?>" onclick="return confirm('Are you sure you want to delete this Deal?');">
+	                                    <span class="ui-icon ui-icon-circle-close"></span>
+	                            </a>
+	                            <?php 
+                                if($data['Deal']['active']=="Yes")	
+                                { ?>
+									<a title="Make Inactive" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Manages/update_Deals/".$newsid; ?>">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+	                            <?php
+	  							}
+	  							elseif($data['Deal']['buy_from'] >= $currentDate && $data['Deal']['buy_to'] <= $currentDate) 
+	  							{ 
+	  							?>
+									<a title="You can not active this deal now!" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="javascript:void(0);">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+	                            <?php
+	                            }
+	                            else {
+	                            ?>
+	                            <a title="Make Active" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="<?php echo HTTP_ROOT."admin/Manages/update_Deals/".$newsid; ?>">
+	                                <span class="ui-icon ui-icon-lightbulb"></span>
+	                            </a>
+	                            <?php
+	                            }
+	                        }
+	                              
+	                             //for module edit condition                     
+	                           ?>  
+	                           
+	                           
+	                          
+	                      </td>                    
+                     </tr>
+                <?php
+                  }
+				   }
+			 		else 
+			 		{
+				  ?>
+						<tr>
+							<td colspan="7">No Record Found.</td>
+						</tr>
+				<?php
+				   } 
+				  ?>	
+				</tbody>
+			</table>
+			<div class="text-center">
+			<ul class="pagination sales_total_pagination" style="align:center;">
+				<?php if($this->params['paging']['Deal']['pageCount']>1) { ?> 		   
+				<li ><?php echo $this->Paginator->prev('Prev');?></li>
+				<li><?php echo $this->Paginator->numbers(array('separator' => false,'class'=>'counter'));?> </li>
+				<li><?php  echo $this->Paginator->next('Next');?></li>
+			<?php } ?>
+			</ul>		
+			</div>
+			
+		</div>
+		<div class="clear"></div>
+	</div>
+	</div>
+	<div class="clear"></div>

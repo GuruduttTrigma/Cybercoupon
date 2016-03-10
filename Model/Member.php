@@ -1,0 +1,146 @@
+<?php 
+class Member extends AppModel
+{
+	var $name= 'Member';
+	var $actsAs=array('Containable');
+	var $belongsTo=array(
+			
+       'MemberType'=>array(
+			'className'=>'MemberType',
+			'foreignKey'=>'member_type'),
+       'Location'=>array(
+			'className'=>'Location',
+			'foreignKey'=>'location')
+    	);
+		
+	var $hasOne=array(
+        'MemberMeta'=>array(
+			'className'=>'MemberMeta',
+			'foreignKey'=>'member_id',
+			'dependent'=>true
+		),
+		'ParentReferral'=>array(
+			'className'=>'Referral',
+			'foreignKey'=>'refer_id',
+			'dependent'=>true
+		)
+	);
+	var $hasMany=array(
+        'Deal'=>array(
+			'className'=>'Deal',
+			'foreignKey'=>'member_id',
+			'dependent'=>true,
+			'order'=>'Deal.id desc' 
+        ),
+		'ModulePermission'=>array(
+			'className'=>'ModulePermission',
+			'foreignKey'=>'member_id',
+			'dependent'=>true,
+			'order'=>'ModulePermission.id ASC' 
+        ),
+		'Referral'=>array(
+			'className'=>'Referral',
+			'foreignKey'=>'member_id',
+			'dependent'=>true
+        ),
+		'Order'=>array(
+			'className'=>'Order',
+			'foreignKey'=>'supplier_id',
+        )
+	);
+	public $validate = array(
+		'log_email' => array(
+								'rule1' => array(
+									'rule'    => 'notEmpty',
+									'message' => 'This field is required.',
+									'last'    => true
+								 ),
+								'rule2' => array(
+									'rule'    => 'email',
+									'message' => 'Enter valid email.',
+									'last'    => true
+								),
+                 ),
+		'log_password' => array(
+                'rule1' => array(
+                	'rule' => 'notEmpty',
+                  'message' => 'This field is required.', 
+                  'last' => true
+                 )  
+                ),
+		'password' => array(
+									'rule1' => array(
+										'rule'    => 'notEmpty',
+										'message' => 'This field is required.',
+										'last'    => true,
+									),
+									'rule2' => array(
+										'rule' => array('minLength', 6),
+										'message' => 'Minimum 6 characters long',
+										
+									)
+					),
+		'cpassword' => array(
+									'rule1' => array(
+										'rule'    => 'notEmpty',
+										'message' => 'This field is required.',
+										'last'    => true,
+									),
+									'rule2' => array(
+										'rule'    => 'confirmPassword',
+										'message' => 'Password and confirm password do not match.',
+										'last'    => true,
+									),
+									'rule3' => array(
+										'rule' => array('minLength', 6),
+										'message' => 'Minimum 6 characters long'
+									)
+									
+					),
+      'email' => array(
+								'rule1' => array(
+									'rule'    => 'notEmpty',
+									'message' => 'This field is required.',
+									'last'    => true
+								 ),
+								'rule2' => array(
+									'rule'    => 'email',
+									'message' => 'Enter valid email.',
+									'last'    => true
+								),
+								'rule3' => array(
+									'rule'    => 'isUnique',
+									'on'      => 'create',
+									'message' => 'Email already exists.'
+									
+								)
+					),
+       'name' => array(
+								'rule1' => array(
+									'rule'    => 'notEmpty',
+									'message' => 'This field is required.',
+								)
+					),
+		  'surname' => array(
+								'rule1' => array(
+									'rule'    => 'notEmpty',
+									'message' => 'This field is required.',
+								)
+					)
+   );
+
+function confirmPassword()
+	{
+	  // return strcmp($this->data['Member']['password'],$this->data['Member']['cpassword']);
+	    if($this->data[$this->name]['password'] == $this->data[$this->name]['cpassword'])
+	    {
+         return true;
+     }
+     return false;
+ }
+
+
+
+
+	}
+?>

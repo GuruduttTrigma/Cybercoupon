@@ -1,0 +1,18 @@
+<?php 
+class Refferal extends AppModel
+{
+	var $name= 'Refferal';
+	var $actsAs=array('Containable');
+	var $belongsTo=array(
+			
+       'Member'=>array(
+				'className'=>'Member',
+				'foreignKey'=>'member_id'),
+    	);
+   
+  
+
+
+
+	}
+?>

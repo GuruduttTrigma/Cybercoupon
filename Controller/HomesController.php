@@ -1,0 +1,335 @@
+<?php
+class HomesController extends AppController {
+	var $name= "Homes";
+	var $helper=array('Html','Form','Js','Paginator','Session');
+	var $components = array('RequestHandler','Cookie','Session','Email','Paginator');
+	var $uses = array('Member','Faq','Slider','EmailTemplate','Contact','CmsPage','OrderDealRelation');
+
+	function index()
+	{
+		$this->layout='public';
+		$this->loadModel('Deal');
+		$this->loadModel('DealCategory');
+		
+		$id=$this->Session->read('Member.id');
+		$session_id=convert_uudecode(base64_decode($id));	 
+		
+		
+		$introductory_text = $this->CmsPage->find('first',array('conditions'=>array('CmsPage.id'=>7)));					
+		$this->set('introductory_text',$introductory_text);	
+		
+		
+		$category_list = $this->DealCategory->find('threaded',array('order'=>'DealCategory.lft','recursive'=>-1));
+		//echo "<pre>";print_r($category_list);die;
+		$catIdList = array();
+		foreach ($category_list as $clist)
+		{
+			if($clist['DealCategory']['active']=='Yes') 
+			{
+			   $catIdList[$clist['DealCategory']['name']][] = $clist['DealCategory']['id'];
+			
+				foreach ($clist['children'] as $cid)
+				{
+	            if($cid['DealCategory']['active']=='Yes')
+	            {				
+					$catIdList[$clist['DealCategory']['name']][] = $cid['DealCategory']['id'];
+					}
+				}
+			}
+		}
+		//$this->Deal->virtualFields = array('sales_deal'=>'SELECT SUM(qty) FROM order_deal_relations inner join orders on order_deal_relations.order_id=orders.id and orders.order_status!="failed" && orders.delete_status!="Admin-del"  where order_deal_relations.refund_status!="Yes"  && `deal_id`= Deal.id');		
+		$this->Deal->virtualFields = array('sales_deal'=>'SELECT SUM(qty) FROM order_deal_relations inner join orders on orders.id=order_deal_relations.order_id where `order_deal_relations.deal_id`= Deal.id and orders.order_status!="failed"  && orders.delete_status!="Admin-del" && order_deal_relations.refund_status!="Yes" ','max_discount_selling_price'=>'select min(discount_selling_price) as diss from deal_options as do group by deal_id having do.deal_id=Deal.id','max_discount'=>'select discount from deal_options as d where d.deal_id=Deal.id AND d.discount_selling_price=(select min(discount_selling_price) as diss from deal_options as do group by do.deal_id having do.deal_id=Deal.id) limit 1','max_selling_price'=>'select selling_price from deal_options as d where d.deal_id=Deal.id AND d.discount_selling_price=(select min(discount_selling_price) as diss from deal_options as do group by do.deal_id having do.deal_id=Deal.id) limit 1');		
+	   $today_date=date('Y-m-d');  
+		$alldealsList = array();
+		foreach ($catIdList as $k=>$catlist)
+		{
+			$countNumberOfCateBelongs = count($catlist);
+			if ($countNumberOfCateBelongs > 1)
+			{
+				$alldealsList[$k] = $this->Deal->find('all',array('fields'=>array('Deal.id', 'Deal.member_id','Deal.uri', 'Deal.name','Deal.image', 'Deal.buy_from', 'Deal.buy_to', 'Deal.category', 'Deal.quantity', 'Deal.location', 'Deal.active', 'Deal.delete_status', 'DealCategory.*', 'Location.*', 'sales_deal', 'max_discount','max_discount_selling_price','max_selling_price'),'conditions'=>array('Deal.active'=>'Yes','Deal.buy_to >='=>$today_date,'Deal.delete_status'=>'No','Deal.category IN'=>$catlist),'order'=>'Deal.buy_to asc','limit'=>'7','contain'=>array('Location','DealCategory','DealOption')));
+			}
+			else
+			{
+				$alldealsList[$k] = $this->Deal->find('all',array('fields'=>array('Deal.id', 'Deal.member_id','Deal.uri', 'Deal.name','Deal.image', 'Deal.buy_from', 'Deal.buy_to', 'Deal.category', 'Deal.quantity', 'Deal.location', 'Deal.active', 'Deal.delete_status', 'DealCategory.*','Location.*','sales_deal', 'max_discount','max_discount_selling_price'),'order'=>'Deal.buy_to asc','limit'=>'7','contain'=>array('Location','DealCategory','DealOption')));
+			}
+		}
+		//pr($alldealsList);die;
+		$this->set('alldealsList',$alldealsList);
+		
+	} 
+	 
+	function expired_link()
+	{
+		$this->layout='public';
+	} 
+	function option($opt=null) {
+		$this->layout='public';
+		$this->set(compact('opt'));
+	}
+	function error() {
+		$this->layout='public';
+	} 
+	function advance_search() {
+		$this->layout='public';
+		Configure::write('debug',2);
+		$this->loadModel('Location');
+		$this->loadModel('DealCategory');
+		$this->loadModel('DealOption');
+		$this->loadModel('Wishlist');
+		$this->loadModel('Deal');
+		//$this->Deal->virtualFields = array('sales_deal'=>'SELECT SUM(qty) FROM order_deal_relations inner join orders on order_deal_relations.order_id=orders.id and orders.order_status!="failed" && orders.delete_status!="Admin-del"  where order_deal_relations.refund_status!="Yes"  && `deal_id`= Deal.id');		
+  		//$this->Deal->virtualFields = array('sales_deal'=>'SELECT SUM(qty) FROM order_deal_relations inner join orders on order_deal_relations.order_id=orders.id and orders.order_status!="failed" && orders.delete_status!="Admin-del" where  order_deal_relations.refund_status!="Yes" && `deal_id`= Deal.id','max_selling_price'=>'select max(selling_price) as diss from deal_options as do group by do.deal_id having do.deal_id=Deal.id limit 1', 'min_selling_price'=>'select min(selling_price) as diss from deal_options as do group by do.deal_id having do.deal_id=Deal.id limit 1');
+		$this->Deal->virtualFields = array('sales_deal'=>'SELECT SUM(qty) FROM order_deal_relations inner join orders on orders.id=order_deal_relations.order_id where `order_deal_relations.deal_id`= Deal.id and orders.order_status!="failed"  && orders.delete_status!="Admin-del" && order_deal_relations.refund_status!="Yes" ','max_discount_selling_price'=>'select min(discount_selling_price) as diss from deal_options as do group by deal_id having do.deal_id=Deal.id','max_discount'=>'select discount from deal_options as d where d.deal_id=Deal.id AND d.discount_selling_price=(select min(discount_selling_price) as diss from deal_options as do group by do.deal_id having do.deal_id=Deal.id) limit 1','max_selling_price'=>'select selling_price from deal_options as d where d.deal_id=Deal.id AND d.discount_selling_price=(select min(discount_selling_price) as diss from deal_options as do group by do.deal_id having do.deal_id=Deal.id) limit 1');
+		// $virtual=$this->Deal->virtualFields(array('DealOption'=>'select discount from DealOption where deal_option.id=4'));
+		// pr($virtual);die; 
+		$id=$this->Session->read('Member.id');
+		$sess_id=convert_uudecode(base64_decode($id));
+		if($sess_id!="") {
+			$favid=$this->Wishlist->find('list',array('conditions'=>array('Wishlist.member_id'=>$sess_id),'fields'=>array('deal_id')));
+			$this->set('fav_id',$favid);
+		}
+		else {
+			$favid = array();
+			$this->set('fav_id',$favid);
+		}	 
+		$options = $this->Location->find('all',array('conditions'=>array('Location.active'=>'Yes'),'fields'=>array('Location.id','Location.name')));
+		$this->set('options',$options);
+		
+		//$dealcat = $this->DealCategory->generateTreeList($conditions=array('DealCategory.active'=>'Yes'), $keyPath=null, $valuePath=null, $spacer= '&nbsp&nbsp&nbsp&nbsp');
+      //$this->set('dealcat',$dealcat); 
+		
+		//........start alphabatical category order...
+		$alphabatical_category=$this->_AlphabaticalCategory();
+      $this->set('dealcat',$alphabatical_category); 
+      //........end alphabatical category order...
+      
+		$conditions=array('Deal.active'=>'Yes');
+		$conditions = array_merge($conditions,array('Deal.active'=>'Yes','Deal.buy_from <='=>date("Y-m-d"),'Deal.buy_to >='=>date("Y-m-d")));
+		
+		$price_deal=$this->Deal->find('first',array('conditions'=>$conditions,'contain'=>array('DealOption')));
+		//pr($price_deal);die;
+		$min_price= @$price_deal['Deal']['min_selling_price'];
+		$max_price= @$price_deal['Deal']['max_selling_price']+100;
+		$this->set('min_price',$min_price);
+		$this->set('max_price',$max_price);
+		if(!empty($_REQUEST)) 
+		{
+			$data=@$_REQUEST['data'];
+		}
+		else 
+		{
+			$data=$this->Session->read('search');
+		}
+		//pr($_REQUEST);die;
+		$conditions1=$conditions;
+		if (!empty($data)) 
+		{
+			$this->Session->write('search',$data);
+			$dealname=trim(@$data['Search']['name']);
+			$category=trim(@$data['Search']['category']);
+			$location=trim(@$data['Search']['location']);
+			$selling_price=trim(@$data['Search']['selling_price']);
+			
+			$conditions1=array('Deal.active'=>'Yes');
+			if (!empty($dealname) && isset($dealname)) {
+				$conditions1 = array_merge($conditions1,array('Deal.name LIKE'=>'%'.$dealname.'%'));
+			}
+			if (isset($category) && $category!='' )
+			{
+
+				 $Categorych=$this->DealCategory->children($category);
+				 if(!empty($Categorych))
+				 {
+				 	$search_cat=array();
+	           	foreach($Categorych as $CategoryChildren)
+	           	{ 				
+						array_push($search_cat,$CategoryChildren['DealCategory']['id']);
+					}	
+					$conditions1 = array_merge($conditions1,array('Deal.category in'=>$search_cat));
+				 }
+				 else 
+				 {
+					
+					$conditions1 = array_merge($conditions1,array('Deal.category'=>$category));
+				 }				
+			}
+			
+			
+			if (!empty($selling_price) && isset($selling_price))
+			{
+				$conditions1 = array_merge($conditions1,array('Deal.max_selling_price <='=>$selling_price));
+				//$conditions1 = array_merge($conditions1,array('DealOption.selling_price <='=>$selling_price));
+			}
+			
+			
+			if (!empty($location) && isset($location)) 
+			{
+	          $location_condition=array();
+			  //echo "ssss";die;
+	          $fetch_deals=$this->Deal->find('all',array('conditions'=>$conditions1,'fields'=>array('Deal.id','Deal.location','Deal.max_selling_price')));
+	          // pr($fetch_deals);die;
+	           foreach($fetch_deals as $other_deal)
+				  {
+						$each_deals=$other_deal['Deal']['location'];
+						$sub_deals=explode(',',$each_deals);
+						if(in_array($location,$sub_deals))
+						{
+						    $location_condition[]=$other_deal['Deal']['id'];
+						}
+					}
+	
+					if(!empty($location_condition))
+					{
+						if (count($location_condition)>1)
+						{		
+							$conditions1=array_merge($conditions1,array('Deal.id in'=>$location_condition));
+						}
+						else
+						{
+							$conditions1=array_merge($conditions1,array('Deal.id'=>$location_condition));
+						}
+	            }
+					else
+					{
+					   $conditions1=array_merge($conditions1,array('Deal.id'=>-1));
+					}
+			}
+			
+			/*if(!empty($buy_from) && isset($buy_from)) {
+				$conditions=array_merge($conditions,array('Deal.buy_from >= ' =>$buy_from));
+			}
+			if(!empty($buy_to) && isset($buy_to)) {
+				$conditions=array_merge($conditions,array('Deal.buy_to <= ' =>$buy_to));
+			}*/
+        }
+		//pr($conditions1);
+		//$search=$this->Deal->find('all',array('conditions'=>$conditions1));
+	  	//pr($search);die;
+		//$this->Deal->unbindModel(array('hasMany'=>array('DealOption')));
+		//$this->DealOption->bindModel(array('belongsTo'=>array('Deal'=>array('foreignKey'=>'deal_id'))));
+		/*if(@$discount!='')       				$this->paginate=array('contain'=>array('DealOption'=>array('conditions'=>array('DealOption.discount_selling_price >'=>$discount_selling_price))),'limit'=>4);
+		else*/
+		$this->paginate=array('limit'=>MINLIMIT,'order'=>'Deal.id desc');
+		$deal_info=$this->paginate('Deal',$conditions1);
+		$this->set('deal_info',$deal_info);   
+		//echo "<pre>";print_r($deal_info);die;
+		//pr($deal_info);die;
+		if ($this->RequestHandler->isAjax()) {
+    		$this->layout = '';
+			$this->autoRender = false;
+			$this->viewPath = 'Elements'.DS.'frontend'.DS.'Search';
+			$this->render('search_content');
+		}
+ 	}
+	function faq() {
+		$this->layout="public";
+		//$this->autoRender = false;
+		$this->loadModel('FAQ');
+		$faqdata=$this->Faq->find('all',array('conditions'=>array('Faq.faq_type'=>'customer'),'order'=>array('Faq.order Asc','Faq.id desc')));
+		//pr($faq);die;		
+		$this->set('faq',$faqdata);
+	} 
+	function suppliers_faq() {
+		$this->layout="public";
+		$this->loadModel('FAQ');
+		$faq=$this->Faq->find('all',array('conditions'=>array('Faq.faq_type'=>'supplier'),'order'=>array('Faq.order Asc','Faq.id desc')));
+		//pr($faq);die;
+		$this->set('faq',$faq);
+	} 
+	function sample() {
+		 $this->layout='public';
+	}
+	/*-----------For header all deal & header_searching -------------*/   
+	function alldeal() {
+		$this->layout='public';
+		$this->loadModel('Deal');
+		$this->loadModel('Wishlist');
+		$id=$this->Session->read('Member.id');
+		//$this->Deal->virtualFields = array('sales_deal'=>'SELECT SUM(qty) FROM order_deal_relations inner join orders on order_deal_relations.order_id=orders.id and orders.order_status!="failed" && orders.delete_status!="Admin-del"  where order_deal_relations.refund_status!="Yes"  && `deal_id`= Deal.id');	
+				$this->Deal->virtualFields = array('sales_deal'=>'SELECT SUM(qty) FROM order_deal_relations inner join orders on order_deal_relations.order_id=orders.id and orders.order_status!="failed"  && orders.delete_status!="Admin-del" where order_deal_relations.refund_status!="Yes" && `deal_id`= Deal.id');		
+		$sess_id=convert_uudecode(base64_decode($id));
+		if ($sess_id!="") {
+			$favid=$this->Wishlist->find('list',array('conditions'=>array('Wishlist.member_id'=>$sess_id),'fields'=>array('deal_id')));
+			$this->set('fav_id',$favid);
+		}
+		else {
+			$favid = array();
+			$this->set('fav_id',$favid);
+		}
+		$data=$_GET;
+		//pr($data['category']);die;
+		if (!empty($data)) {
+			$location=convert_uudecode(base64_decode($data['category']));
+			$name=trim(@$data['keyword']);
+			$description=trim(@$data['keyword']);
+			$conditions=array();
+			//pr($cateogry);die;
+			if (!empty($name)) {
+				$conditions = array_merge($conditions,array('OR'=>array('Deal.name LIKE'=>'%'.$name.'%','Deal.description LIKE'=>'%'.$name.'%')));
+			}
+			if (!empty($location)) {
+             $conditions = array_merge($conditions,array('Deal.location'=>$location));
+			}
+			$conditions=array_merge($conditions,array('Deal.active'=>'yes','Deal.buy_from <='=>date("Y-m-d"),'Deal.buy_to >='=>date("Y-m-d")));
+			// pr($conditions);die;
+			$this->paginate=array('limit'=>SINGLEROWLIMIT,'order'=>'Deal.id desc');
+			$deal_info=$this->paginate('Deal',$conditions);
+			$this->set('deal_info',$deal_info);
+			if ($this->RequestHandler->isAjax()) {
+				$this->layout='';
+				$this->autoRender=false;
+				$this->viewPath = 'Elements'.DS.'frontend'.DS.'deals';
+				$this->render('deal_list');
+			}
+		} else {
+			$today_date=date('Y-m-d');         //$deal_info=$this->Deal->find('all',array('conditions'=>array('Deal.active'=>'yes','Deal.buy_to >='=>$today_date),'limit'=>'1','order'=>'Deal.id desc'));
+			$this->paginate=array('limit'=>SINGLEROWLIMIT,'order'=>'Deal.id desc');
+			$conditions=array('Deal.active'=>'yes','Deal.buy_from <='=>date("Y-m-d"),'Deal.buy_to >='=>date("Y-m-d"));
+			$deal_info=$this->paginate('Deal',$conditions);
+			$this->set('deal_info',$deal_info);
+			//pr($deal_info);die;
+			if ($this->RequestHandler->isAjax()) {
+				$this->layout='';
+				$this->autoRender=false;
+				$this->viewPath = 'Elements'.DS.'frontend'.DS.'deals';
+				$this->render('deal_list');
+			}
+			//pr($deal_info);die;
+		}
+	}
+	/*-----------For header featured deal-------------*/
+	function featured_deal() {
+		$this->layout='public';
+		$this->loadModel('Deal');
+		$this->loadModel('Wishlist');
+		$today_date=date('Y-m-d'); 
+		$id=$this->Session->read('Member.id');
+		$sess_id=convert_uudecode(base64_decode($id));
+		$this->paginate=array('limit'=>'4','order'=>'Deal.id desc');
+		$conditions=array('Deal.active'=>'yes','Deal.featured'=>'Yes','Deal.buy_from <='=>date("Y-m-d"),'Deal.buy_to >='=>date("Y-m-d"));
+		$deal_info=$this->paginate('Deal',$conditions);
+		$this->set('deal_info',$deal_info);
+		//pr($deal_info);die;
+		if ($sess_id!="") {
+			$favid=$this->Wishlist->find('list',array('conditions'=>array('Wishlist.member_id'=>$sess_id),'fields'=>array('deal_id')));
+			/*  pr($favid);
+			$feed_ids=array();
+			foreach($favid as $feed) {
+				$feed_ids[]=$feed;
+			} pr($feed_ids);die; */
+			$this->set('fav_id',$favid);
+		}
+		else {		
+			$favid = array();
+    		$this->set('fav_id',$favid);
+		}
+		if ($this->RequestHandler->isAjax()) {
+			$this->layout='';
+			$this->autoRender=false;
+			$this->viewPath = 'Elements'.DS.'frontend'.DS.'deals';
+			$this->render('featured_deal_list');
+		}
+	}
+	/*-------end here---------*/
+}
+?>

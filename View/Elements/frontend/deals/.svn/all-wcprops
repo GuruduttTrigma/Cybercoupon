@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repos/cybercoupon/!svn/ver/1440/app/View/Elements/frontend/deals
+END
+featured_deal_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cybercoupon/!svn/ver/426/app/View/Elements/frontend/deals/featured_deal_list.ctp
+END
+deal_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/cybercoupon/!svn/ver/948/app/View/Elements/frontend/deals/deal_list.ctp
+END
+all_deal_left_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/cybercoupon/!svn/ver/1440/app/View/Elements/frontend/deals/all_deal_left_list.ctp
+END
+all_deal_right_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cybercoupon/!svn/ver/1358/app/View/Elements/frontend/deals/all_deal_right_list.ctp
+END

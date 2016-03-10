@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1821/app/View/Elements/backend/NewsLetter
+END
+preview_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cybercoupon/!svn/ver/1147/app/View/Elements/backend/NewsLetter/preview_list.ctp
+END
+archieve_newsletter_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/cybercoupon/!svn/ver/1627/app/View/Elements/backend/NewsLetter/archieve_newsletter_list.ctp
+END
+dispatched_newsletter_list.ctp~
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/repos/cybercoupon/!svn/ver/1660/app/View/Elements/backend/NewsLetter/dispatched_newsletter_list.ctp~
+END
+dispatched_newsletter_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/repos/cybercoupon/!svn/ver/1821/app/View/Elements/backend/NewsLetter/dispatched_newsletter_list.ctp
+END
+daily_newsletter_list.ctp~
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/cybercoupon/!svn/ver/1660/app/View/Elements/backend/NewsLetter/daily_newsletter_list.ctp~
+END
+newsletter_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cybercoupon/!svn/ver/1817/app/View/Elements/backend/NewsLetter/newsletter_list.ctp
+END
+daily_newsletter_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/cybercoupon/!svn/ver/1627/app/View/Elements/backend/NewsLetter/daily_newsletter_list.ctp
+END

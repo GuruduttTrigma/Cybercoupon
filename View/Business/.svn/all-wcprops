@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/repos/cybercoupon/!svn/ver/1596/app/View/Business
+END
+admin_edit_business_category.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/cybercoupon/!svn/ver/41/app/View/Business/admin_edit_business_category.ctp
+END
+admin_payment_history.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cybercoupon/!svn/ver/1596/app/View/Business/admin_payment_history.ctp
+END
+admin_business_types.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/cybercoupon/!svn/ver/41/app/View/Business/admin_business_types.ctp
+END
+admin_add_business_category.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/cybercoupon/!svn/ver/81/app/View/Business/admin_add_business_category.ctp
+END
+sales_redeem.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1412/app/View/Business/sales_redeem.ctp
+END
+reconcile_all.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repos/cybercoupon/!svn/ver/1433/app/View/Business/reconcile_all.ctp
+END
+admin_edit_business_types.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/cybercoupon/!svn/ver/81/app/View/Business/admin_edit_business_types.ctp
+END
+admin_add_business_types.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/cybercoupon/!svn/ver/435/app/View/Business/admin_add_business_types.ctp
+END
+admin_business_category.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cybercoupon/!svn/ver/41/app/View/Business/admin_business_category.ctp
+END
+admin_reconcile_deal.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/cybercoupon/!svn/ver/760/app/View/Business/admin_reconcile_deal.ctp
+END
+admin_view_payment_history.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/cybercoupon/!svn/ver/1537/app/View/Business/admin_view_payment_history.ctp
+END
+admin_reconcilation.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/cybercoupon/!svn/ver/1568/app/View/Business/admin_reconcilation.ctp
+END
+admin_view_payment_detail.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/cybercoupon/!svn/ver/820/app/View/Business/admin_view_payment_detail.ctp
+END
+reconcile.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/repos/cybercoupon/!svn/ver/630/app/View/Business/reconcile.ctp
+END

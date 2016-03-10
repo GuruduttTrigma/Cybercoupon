@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/repos/cybercoupon/!svn/ver/1820/app/Controller
+END
+AppController.php
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repos/cybercoupon/!svn/ver/1816/app/Controller/AppController.php
+END
+CustomersController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repos/cybercoupon/!svn/ver/1703/app/Controller/CustomersController.php~
+END
+CustomersController.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/cybercoupon/!svn/ver/1818/app/Controller/CustomersController.php
+END
+CronsController.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1820/app/Controller/CronsController.php
+END
+AuthsController.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1680/app/Controller/AuthsController.php
+END
+SuppliersController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repos/cybercoupon/!svn/ver/1703/app/Controller/SuppliersController.php~
+END
+SuppliersController.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/cybercoupon/!svn/ver/1814/app/Controller/SuppliersController.php
+END
+MembersController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/cybercoupon/!svn/ver/1703/app/Controller/MembersController.php~
+END
+DealsController.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1820/app/Controller/DealsController.php
+END
+MembersController.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1806/app/Controller/MembersController.php
+END
+BusinessController.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/cybercoupon/!svn/ver/1697/app/Controller/BusinessController.php
+END
+ReportsController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/cybercoupon/!svn/ver/1703/app/Controller/ReportsController.php~
+END
+OrdersController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1703/app/Controller/OrdersController.php~
+END
+PagesController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repos/cybercoupon/!svn/ver/1703/app/Controller/PagesController.php~
+END
+ReportsController.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1763/app/Controller/ReportsController.php
+END
+OrdersController.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repos/cybercoupon/!svn/ver/1818/app/Controller/OrdersController.php
+END
+PagesController.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1778/app/Controller/PagesController.php
+END
+ManagesController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/cybercoupon/!svn/ver/1703/app/Controller/ManagesController.php~
+END
+HomesController.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1794/app/Controller/HomesController.php
+END
+ManagesController.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1816/app/Controller/ManagesController.php
+END
+ValidatesController.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/cybercoupon/!svn/ver/1673/app/Controller/ValidatesController.php
+END
+NewsLettersController.php~
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/cybercoupon/!svn/ver/1703/app/Controller/NewsLettersController.php~
+END
+NewsLettersController.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/cybercoupon/!svn/ver/1814/app/Controller/NewsLettersController.php
+END

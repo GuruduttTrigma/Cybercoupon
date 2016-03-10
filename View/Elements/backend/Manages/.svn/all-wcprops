@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repos/cybercoupon/!svn/ver/1817/app/View/Elements/backend/Manages
+END
+refund_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/cybercoupon/!svn/ver/1574/app/View/Elements/backend/Manages/refund_list.ctp
+END
+deals_list_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cybercoupon/!svn/ver/1638/app/View/Elements/backend/Manages/deals_list_list.ctp
+END
+deals_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/cybercoupon/!svn/ver/1817/app/View/Elements/backend/Manages/deals_list.ctp
+END
+currency_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cybercoupon/!svn/ver/1344/app/View/Elements/backend/Manages/currency_list.ctp
+END
+locations_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/cybercoupon/!svn/ver/1344/app/View/Elements/backend/Manages/locations_list.ctp
+END
+customer_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cybercoupon/!svn/ver/961/app/View/Elements/backend/Manages/customer_list.ctp
+END
+cmspages_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/cybercoupon/!svn/ver/1344/app/View/Elements/backend/Manages/cmspages_list.ctp
+END
+customer_verification_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/repos/cybercoupon/!svn/ver/1660/app/View/Elements/backend/Manages/customer_verification_list.ctp
+END
+faq_category_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cybercoupon/!svn/ver/115/app/View/Elements/backend/Manages/faq_category_list.ctp
+END
+emailTemplates_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/cybercoupon/!svn/ver/1344/app/View/Elements/backend/Manages/emailTemplates_list.ctp
+END
+faq_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/cybercoupon/!svn/ver/1344/app/View/Elements/backend/Manages/faq_list.ctp
+END
+claims_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/cybercoupon/!svn/ver/1566/app/View/Elements/backend/Manages/claims_list.ctp
+END
+view_sold_vouchers_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cybercoupon/!svn/ver/1042/app/View/Elements/backend/Manages/view_sold_vouchers_list.ctp
+END
+sold_vouchers_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cybercoupon/!svn/ver/1803/app/View/Elements/backend/Manages/sold_vouchers_list.ctp
+END
+edit_deal_image.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cybercoupon/!svn/ver/1758/app/View/Elements/backend/Manages/edit_deal_image.ctp
+END

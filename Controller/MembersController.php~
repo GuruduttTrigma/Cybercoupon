@@ -1,0 +1,956 @@
+<?php
+ob_start();
+class MembersController extends AppController {
+	var $helpers = array('Html','Form','Session','Js','Paginator');
+	var $components = array('RequestHandler','Cookie','Session','Email');
+	var $uses = array('Member','MemberType','Location','BusinessType','BusinessCategory','MemberMeta','EmailTemplate','AdminModule');
+	
+	function beforeFilter() {
+		$this->disableCache();
+		parent::beforeFilter();
+		if (!$this->CheckAdminSession() && $this->request->prefix=='admin' && !in_array($this->request->action,array('admin_login','admin_forgot_password','admin_reset_password'))) {    
+			$this->redirect(array('controller'=>'auths','action' => 'login','admin' => true));
+			exit();
+		}	
+	}
+	/*function admin_members() {
+		$this->layout='admin';
+		$member=$this->Member->find('all',array('order'=>array('Member.id desc'),'conditions'=>array('MemberType.name NOT'=>'admin','MemberType.id NOT'=>'1')));
+		$this->set(compact('member'));
+	}*/
+	function admin_members($member_type=null) {
+		$this->layout = 'admin';
+		//$this->autoRender = false;
+		//echo $member_type;die;	
+		$member_type=convert_uudecode(base64_decode($member_type));
+		//echo $member_type;die;		
+		$this->set(compact('member_type'));
+		$conditions = array();
+		if (!empty($this->request->data)) {
+			//$mySearchParams  = $_POST;
+			//$this->Session->write('mySearchParams',$mySearchParams);	
+			//pr($this->request->data);die;
+			$names = trim(@$_POST['data']['Member']['name']);
+			$surnames = trim(@$_POST['data']['Member']['surname']);
+			$emails = trim(@$_POST['data']['Member']['email']);
+			$city = trim(@$_POST['data']['Member']['city']);
+			$location = trim(@$_POST['data']['Member']['location']);
+			$news_location = trim(@$_POST['data']['Member']['news_location']);
+			$status = trim(@$_POST['data']['Member']['status']);
+			$reg_from = trim(@$_POST['data']['Member']['registered']);
+			$reg_to = trim(@$_POST['data']['Member']['register_to']);
+			//$type = trim($_POST['data']['Member']['type']);
+  			//echo $location;die; 
+			if ($names!= "") {
+				$conditions = array_merge($conditions,array('Member.name LIKE'=>'%'.$names.'%'));
+			}
+			if ($surnames!= "") {
+				$conditions = array_merge($conditions,array('Member.surname LIKE'=>'%'.$surnames.'%'));
+			}
+			if ($emails!= "") {
+				$conditions = array_merge($conditions,array('Member.email LIKE'=>'%'.$emails.'%'));
+			}
+			if ($city!= "") {
+				$conditions = array_merge($conditions,array('Member.city LIKE'=>$city));
+			}
+			
+			
+			if ($status!= "") {
+				$conditions = array_merge($conditions,array('Member.status'=>$status));
+			}
+			if($reg_from!="") {
+			      $reg_from=date('Y-m-d',strtotime($reg_from));
+				  $conditions=array_merge($conditions,array('Member.registered >= ' =>$reg_from));
+				//pr($conditions);die;									
+			}
+			if($reg_to!="") {
+			    $reg_to=date('Y-m-d',strtotime($reg_to));
+				$conditions=array_merge($conditions,array('Member.registered <= ' =>$reg_to));
+				//pr($conditions);die;									
+			}
+			if ($location!= "")
+			{
+				$conditions = array_merge($conditions,array('Member.location'=>$location));
+			}
+			if ($news_location!= "") {
+				
+            $options = $this->Location->find('all',array('conditions'=>array('Location.active'=>'Yes','Location.mandatory_location'=>'Yes'),'fields'=>array('Location.id','Location.name')));				
+            $menadatory_loc=array();
+            //pr($options);die;				
+				if(!empty($options))
+				{
+					foreach($options as $each_option)
+					{
+						$menadatory_loc[]=$each_option['Location']['id'];
+					}
+				}
+				$location_condition=array();
+	       	$fetch_member=$this->Member->find('all',array('conditions'=>$conditions,'fields'=>array('Member.id','Member.news_location','Member.news_location_updation'),'recursive'=>'-1'));
+	
+	        	foreach($fetch_member as $other_location)
+			  	{
+			  		
+					$each_location=$other_location['Member']['news_location'];
+					$sub_location=explode(',',$each_location);
+               if($other_location['Member']['news_location_updation']=='No')
+               {
+               	$sub_location=array_merge($sub_location,$menadatory_loc);
+               	array_unique($sub_location);
+               }					
+					
+					
+					if(in_array($news_location,$sub_location))
+					{
+					    $location_condition[]=$other_location['Member']['id'];
+					}
+				}	
+				if(!empty($location_condition))
+				{
+					if (count($location_condition)>1)
+					{		
+						$conditions=array_merge($conditions,array('Member.id in'=>$location_condition));
+					}
+					else
+					{
+						$conditions=array_merge($conditions,array('Member.id'=>$location_condition));
+					}
+	         }
+				else
+				{
+				   $conditions=array_merge($conditions,array('Member.id'=>-1));
+				}
+			}
+			/*if ($type!= "") {
+				$conditions = array_merge($conditions,array('Mem.name'=>$type));
+			} */
+		}
+		//echo '<pre>';print_r($conditions);die;
+		if (!empty($conditions)) { 
+			//echo "kk";
+			//pr($conditions);die;
+		   $conditions = array_merge($conditions,array('Member.member_type'=>$member_type,'MemberType.name NOT'=>'admin','MemberType.id NOT'=>'1')); 
+			$member = $this->Member->find('all',array('order'=>array('Member.id desc'),'conditions'=>$conditions,'contain'=>array('MemberMeta'=>array('company_name'),'Location','MemberType','ModulePermission')));
+			$this->Session->write('export',$conditions);
+			//pr($conditions);
+			//pr($member);die;		
+		}
+		else {
+			//echo "di";die;
+			//'Member'=>array('id','name','surname','member_type','email','phone','city','location','status','first_step_approval','registered'),
+			$conditions = array_merge($conditions,array('Member.member_type'=>$member_type));
+			$member=$this->Member->find('all',array('order'=>array('Member.id desc'),'conditions'=>$conditions,'contain'=>array('MemberMeta'=>array('company_name'),'Location','MemberType','ModulePermission')));
+			$this->Session->write('export',$conditions);    	
+		}
+		$this->set(compact('member'));
+		//pr($member);die;
+		$this->set('member_type',$member_type);
+		$cities = $this->Location->find('all',array('conditions'=>array('Location.active'=>'Yes')));
+		$this->set('cities',$cities);  
+		
+		if ($this->RequestHandler->isAjax()) {
+			$this->layout = '';
+			$this->autoRender = false;
+			$this->viewPath='Elements'.DS.'backend'.DS.'Members';
+			$this->render('members_list');
+		}
+	}
+	function admin_generate_csv($member_type=null) {	
+	   $member_type = convert_uudecode(base64_decode($member_type)); 
+		//echo $member_type;		
+		$conditions = $this->Session->read('export');
+		//pr($conditions);die;
+		if ($conditions['Member.member_type'] =='3') {
+			$this->layout = "admin";
+			$this->autoRender = false;
+			$this->loadModel('Member');
+			Configure::write('debug', 2);
+			$data = "Name,Email,Phone,Company_Name,Status,Customer_Type \n";
+			$allPayments = $this->Member->find('all', array('conditions'=>$conditions,'order'=>'Member.id desc','recursive'=>0));		  
+			foreach ($allPayments as $payment) {	
+				$data .= $payment['Member']['name'].",";
+				$data .= $payment['Member']['email'].",";
+				$data .= $payment['Member']['phone'].",";
+				$data .= $payment['MemberMeta']['company_name'].",";
+				
+				$data .=$payment['Location']['active'].",";
+				$data .=$payment['MemberType']['name'].",";		
+				//$totalDeal = $this->Member->find('count', array('conditions' => array('Member.id' => '<> NULL ')));	
+				//pr($totalDeal);											
+				$data .="\n";	
+			}
+			//pr($data);die;
+			$this->Session->delete('Member_sess');
+			header("Content-Type: application/csv");			
+			$csv_filename = 'Payment_list_'.date("Y-m-d_H-i",time()).'.csv';
+			header("Content-Disposition:attachment;filename=".$csv_filename);
+			$fd = fopen ($csv_filename, "w");
+			fputs($fd,$data);
+			fclose($fd);
+			echo $data;
+			die();		
+		}
+		if ($conditions['Member.member_type'] =='2') {		
+			$this->layout="admin";
+			$this->autoRender=false;
+			$this->loadModel('Member');
+			Configure::write('debug', 2);
+			$data = "Name,Email,Phone,Company_Name,Status,Customer_Type \n";
+			$allPayments = $this->Member->find('all', array('conditions'=>$conditions,'order'=>'Member.id desc','recursive'=>0));		
+			//pr($allPayments);die;	   
+			foreach ($allPayments as $payment) {	
+				$data .= $payment['Member']['name'].",";
+				$data .= $payment['Member']['email'].",";
+				$data .= $payment['Member']['phone'].",";
+				$data .= $payment['MemberMeta']['company_name'].",";
+				
+				$data .= $payment['Location']['active'].",";
+				$data .= $payment['MemberType']['name'].",";		
+				//$totalDeal = $this->Member->find('count', array('conditions' => array('Member.id' => '<> NULL ')));	
+				//pr($totalDeal);											
+				$data .= "\n";	
+			}
+			//pr($data);die;
+			$this->Session->delete('Member_sess');
+			header("Content-Type: application/csv");			
+			$csv_filename = 'Payment_list_'.date("Y-m-d_H-i",time()).'.csv';
+			header("Content-Disposition:attachment;filename=".$csv_filename);
+			$fd = fopen ($csv_filename, "w");
+			fputs($fd,$data);
+			fclose($fd);
+			echo $data;
+			die();
+		}
+		if ($conditions['Member.member_type'] =='4') {
+			//echo hiiiiiiiiiii;die;
+			$this->layout = "admin";
+			$this->autoRender = false;
+			$this->loadModel('Member');
+			Configure::write('debug', 2);
+			$data = "Name,Email,Phone,Status,Type \n";
+			$allPayments = $this->Member->find('all', array('conditions'=>$conditions,'order'=>'Member.id desc','recursive'=>0));		
+			//pr($allPayments);die;
+			foreach ($allPayments as $payment) {	
+				$data .= $payment['Member']['name'].",";
+				$data .= $payment['Member']['email'].",";
+				$data .= $payment['Member']['phone'].",";
+				$data .= $payment['Location']['active'].",";
+				$data .= $payment['MemberType']['name'].",";			
+				$data .= "\n";					
+			}
+			$this->Session->delete('Member_sess');
+			header("Content-Type: application/csv");			
+			$csv_filename = 'Payment_list'."_".date("Y-m-d_H-i",time()).".csv";
+			header("Content-Disposition:attachment;filename=$csv_filename");
+			$fd = fopen ($csv_filename, "w");
+			fputs($fd,$data);
+			fclose($fd);
+			echo $data;
+			die();
+			}
+	}
+	function admin_generate_xsl($member_type=null) {
+		$member_type = convert_uudecode(base64_decode($member_type)); 
+		$conditions = $this->Session->read('export');
+		//pr($conditions);die;
+		if ($conditions['Member.member_type'] == '2') {
+			$this->autoRender=false;
+			ini_set('max_execution_time', 1600); 
+			$header_row="Name,Email,Phone,Customer_Type,Company_Name,Status\n";		
+			$results=$this->Member->find('all',array('conditions'=>$conditions));	
+			//pr($results);die;
+			foreach ($results as $result) {
+				@$header_row.= $result['Member']['name'].",". $result['Member']['email'] .",".$result['Member']['phone'] .",".$result['MemberType']['name'].",". $result['MemberMeta']['company_name'] .",". $result['Location']['active'] .","."\n";
+			}		
+			$filename = "export_".date("Y.m.d").".xls";
+			header('Content-type: application/ms-excel');
+			header('Content-Disposition: attachment; filename="'.$filename.'"');
+			echo($header_row);
+		}
+		if ($conditions['Member.member_type'] =='3') {
+			$this->autoRender=false;
+			ini_set('max_execution_time', 1600); 
+			$header_row = "Name,Email,Phone,Customer_Type,Company_Name,Status\n";		
+			$results=$this->Member->find('all',array('conditions'=>$conditions));	
+			//pr($results);die;
+			foreach ($results as $result) {
+				@$header_row.= $result['Member']['name'].",". $result['Member']['email'] .",".$result['Member']['phone'] .",".$result['MemberType']['name'].",". $result['MemberMeta']['company_name'] .",". $result['Location']['active'] .","."\n";
+			}		
+			$filename = "export_".date("Y.m.d").".xls";
+			header('Content-type: application/ms-excel');
+			header('Content-Disposition: attachment; filename="'.$filename.'"');
+			echo($header_row);
+		}
+		if ($conditions['Member.member_type'] =='4') {
+			$this->autoRender = false;
+			ini_set('max_execution_time', 1600); 
+			$header_row = "Name,Email,Phone,Customer_Type,Company_Name,Status\n";
+			$results = $this->Member->find('all',array('conditions'=>$conditions));
+			//pr($results);die;
+			foreach ($results as $result) {
+				@$header_row.= $result['Member']['name'].",". $result['Member']['email'] .",".$result['Member']['phone'] .",".$result['MemberType']['name'].",". $result['MemberMeta']['company_name'] .",". $result['Location']['active'].","."\n";
+			}		
+			$filename = "export_".date("Y.m.d").".xls";
+			header('Content-type: application/ms-excel');
+			header('Content-Disposition: attachment; filename="'.$filename.'"');
+			echo($header_row);
+		}
+		//unset($_SESSION['$conditions']);
+	}
+	function admin_addMember($member_type=NULL) {
+		$this->layout = 'admin';
+		$member_type1 = convert_uudecode(base64_decode($member_type));
+		$this->set('member_type',$member_type1);
+		$options = $this->Location->find('all',array('conditions'=>array('Location.active'=>'Yes'),'fields'=>array('Location.id','Location.name')));
+		$this->set('options',$options);
+     	$business_cat = $this->BusinessCategory->find('all',array('order'=>array('BusinessCategory.id ASC'))); 
+     	$this->set(compact('business_cat'));
+     	$business_type = $this->BusinessType->find('all',array('order'=>array('BusinessType.id ASC'))); 
+     	$this->set(compact('business_type'));     
+		$options2 = $this->MemberType->find('all',array('conditions'=>array('MemberType.name NOT'=>'admin','MemberType.id NOT'=>'1'),'fields'=>array('MemberType.id','MemberType.name'),'order'=>'MemberType.name ASC'));
+		$this->set('options2',$options2);   
+		//...........for sub-admin permission......
+		$Categorylist = $this->AdminModule->find('threaded',array('conditions'=>array('AdminModule.active'=>'Yes')));
+		$this->set('Categorylist',$Categorylist);
+			if (!empty($this->request->data)) {
+    			$data1=$this->request->data;
+    			$data1['Member']['password']=md5($this->data['Member']['password']);
+    			$data1['Member']['dob'] = date('Y-m-d',strtotime(@$this->data['Member']['dob']));
+    			$data1['Member']['status']='Active';
+    			$data1['Member']['registered'] = date('Y-m-d H:i:s');
+				 //pr($data1);
+    			if ($this->Member->save($data1)) {
+					$recentadded_memberid=$this->Member->getLastInsertId();
+					// echo $recentadded_memberid;die;
+        			if ($data1['Member']['member_type'] == '3') {
+						$data1['MemberMeta']['member_id'] = $recentadded_memberid;
+						$data1['MemberMeta']['start_date'] = @date('Y-m-d',strtotime($data1['MemberMeta']['start_date']));
+						$this->MemberMeta->save($data1);
+					}
+					//..........for subadmin module.........
+					//pr($_POST);
+					$module_permission=@$_POST['ModulePermission'];
+					//pr($module_permission);die;
+				    $this->loadModel('ModulePermission');
+				    if (!empty($module_permission)) {
+						//$i=0;
+						foreach($module_permission as $permission) {
+							$parent_selection=$permission['parentmodule_selection'];
+							//if ($parent_selection) {
+								unset($permission['parentmodule_selection']);
+								//  pr($permission);
+								foreach ($permission as $perm) {
+									$final_permission=array();
+									//if($perm['subparent_selected']=='1') { 
+										// pr($perm);
+									$view_perm=(@$perm['view_permission']==1)?$perm['view_permission']:0;
+									$edit_perm=(@$perm['edit_permission']==1)?$perm['edit_permission']:0;
+									$active_perm=(@$perm['active_permission']==1)?$perm['active_permission']:0;
+									$delete_perm=(@$perm['delete_permission']==1)?$perm['delete_permission']:0;
+									$email_perm=(@$perm['email_permission']==1)?$perm[	'email_permission']:0;
+									$final_permission['ModulePermission']['module_id']=$perm['module_id'];
+					                $final_permission['ModulePermission']['view_permission']=$view_perm;             //pr($final_permission['ModulePermission']['view_permission']);
+									$final_permission['ModulePermission']['member_id']=$recentadded_memberid;
+									$final_permission['ModulePermission']['edit_permission']=$edit_perm;
+									$final_permission['ModulePermission']['active_permission']=$active_perm;
+									$final_permission['ModulePermission']['delete_permission']=$delete_perm;
+									$final_permission['ModulePermission']['email_permission']=$email_perm;
+									//pr($perm);                              
+			                        //echo "else simple save";
+									//pr($final_permission);
+									$this->ModulePermission->create();
+								    $this->ModulePermission->save($final_permission); 
+                                }
+								// die;
+					        //}
+						}
+						//die;
+				    }
+					//...........end for subadmin module.....       
+					$emailTemp1 = $this->EmailTemplate->find('first',array('conditions'=>array('EmailTemplate.alias'=>'subadmin_email')));
+					//echo "<pre>";print_r($emailTemp1);die;	
+					//  pr($data1);
+					$name = $data1['Member']['name']." ".$data1['Member']['surname'];
+					$emailid = $data1['Member']['email'];
+					$password = $data1['Member']['con_password'];
+					//pr($message);
+					//pr($name);
+					$common_template = $emailTemp1['EmailTemplate']['description'];
+					// echo "<pre>";print_r($common_template);
+					$common_template = str_replace('{name}',$name,$common_template);
+					$common_template = str_replace('{emailid}',$emailid,$common_template);
+					$common_template = str_replace('{password}',$password,$common_template);
+					$email1=$data1['Member']['email'];		
+					//	pr($email1);
+					//echo "<pre>";print_r($common_template);
+        			$email = new CakeEmail();
+        			$email->template('common_template');
+        			$email->emailFormat('both');
+        			$email->viewVars(array('common_template'=>$common_template));
+        			$email->to($email1);
+					//$email->cc('promatics.rakeshmaurya@gmail.com');
+        			$email->from($emailTemp1['EmailTemplate']['from']);
+        			$email->subject($emailTemp1['EmailTemplate']['subject']);  
+			        $email->send();
+					$this->Session->write('success','Member has added successfully.');
+					$url='admin_members/'.$member_type;
+					//echo $url;die;
+					$this->redirect(array('action'=>'admin_members/'.$member_type));
+    			}
+			}
+	}
+	function admin_checkMemberEmail() {
+		//pr($this->data);die;
+  		$email=trim($_REQUEST['data']['Member']['email']);
+  		$this->autoRender = false;
+  		$count=$this->Member->find('count',array('conditions'=>array('Member.email'=>$email)));
+  		if($count > 0) {
+  			echo "false";die;
+  		}
+  		else {
+  			echo "true";die;
+  		}
+	}
+	function admin_checkMemberCompId() {
+  		$comp=trim($_REQUEST['data']['Member']['company_id']);
+  		$this->autoRender = false;
+  		$count=$this->Member->find('count',array('conditions'=>array('Member.company_id'=>$comp)));
+  		if($count > 0) {
+  			echo "false";die;
+  		}
+  		else {
+  			echo "true";die;
+  		}
+	}
+	function admin_deleteMember($id=null) {
+		$this->autoRender=false;
+		$member_id=convert_uudecode(base64_decode($id));
+		$del_mem=$this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id)));
+		$member_type=base64_encode(convert_uuencode($del_mem['MemberType']['id']));
+		if($this->Member->delete($member_id)) {
+			$this->Session->write('success','Member has been deleted successfully');
+			$this->redirect(array('action'=>'admin_members',$member_type));
+		}		
+	}
+	function admin_statusMember($id=NULL) {		
+		$member_id = convert_uudecode(base64_decode($id));
+		//echo $member_type;die;
+		//$old_data = $this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id),'fields'=>array('email','status','name','surname','member_type')));
+		$old_data = $this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id),'fields'=>array('email','status','name','surname','member_type','MemberType.name','MemberType.id'),'contain'=>array('MemberType','Deal','ModulePermission')));		
+		//pr($old_data);
+		$email = $old_data['Member']['email'];
+		$memtype = $old_data['Member']['member_type'];
+		$MemberType = $old_data['MemberType']['name'];
+		//echo $MemberType;die;
+		$membtype = base64_encode(convert_uuencode($memtype));
+		//pr($membtype);die;		
+		//$old_data = $old_data['Member']['status'];
+		
+		$name = $old_data['Member']['name']." ".$old_data['Member']['surname'];
+		//pr($name);die;
+		if($old_data['Member']['status']=="Active") {
+			if($this->Member->updateAll(array('Member.status'=>"'Inactive'"),array('Member.id'=>$member_id))) {
+				//echo $old_data['MemberType']['name'];die;				
+				$emailTemp1= $this->EmailTemplate->find('first',array('conditions'=>array('EmailTemplate.alias'=>'decline_user')));
+				//echo "<pre>";print_r($emailTemp1);die;	
+				$common_template= $emailTemp1['EmailTemplate']['description'];
+				//echo $common_template;die;
+				$common_template= str_replace('{name}',$name,$common_template);
+				$common_template= str_replace('{member_type}',$MemberType,$common_template);
+				//echo $common_template;die;
+				$emailz = new CakeEmail();
+				$emailz->template('common_template');
+				$emailz->emailFormat('both');
+				$emailz->viewVars(array('common_template'=>$common_template));
+				//echo 'done';die;
+				$emailz->to($email);
+				 
+				$emailz->from($emailTemp1['EmailTemplate']['from']);
+				$emailz->subject($emailTemp1['EmailTemplate']['subject']);
+				//echo '<pre>';print_r($common_template);die;
+				$emailz->send();	
+				$this->Session->write('success','Member has been declined.');
+				//pr($membtype);die;		      	  
+				$this->redirect(array('action'=>'members/'.$membtype));
+				//$this->redirect(array('action'=>'members',$membtype));
+			}
+		}
+		else {
+			if($this->Member->updateAll(array('Member.status'=>"'Active'"),array('Member.id'=>$member_id))) { 
+				//echo $old_data['MemberType']['name'];die;					
+				$emailTemp1= $this->EmailTemplate->find('first',array('conditions'=> array('EmailTemplate.alias' =>'approve_user')));
+				//pr($emailTemp1);die;				
+				$common_template= $emailTemp1['EmailTemplate']['description'];
+				$common_template= str_replace('{name}',$name,$common_template);
+				$common_template= str_replace('{member_type}',$MemberType,$common_template);				
+				// echo 'done';die;
+				$emailz = new CakeEmail();
+				$emailz->template('common_template');
+				$emailz->emailFormat('both');
+				$emailz->viewVars(array('common_template'=>$common_template));
+				$emailz->to($email);
+				$emailz->from($emailTemp1['EmailTemplate']['from']);
+				$emailz->subject($emailTemp1['EmailTemplate']['subject']);
+				//echo '<pre>';print_r($common_template);die;
+				$emailz->send();
+				$this->Session->write('success','Member has been activated successfully');
+				//pr($membtype);die;		      	  			
+				$this->redirect(array('action'=>'members/'.$membtype));
+				//$this->redirect(array('action'=>'members',$membtype));
+			}
+		}
+	}
+	function admin_view_member($id=null) {		
+		$this->layout='admin';
+		$member_id=convert_uudecode(base64_decode($id));
+		$member=$this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id)));
+		$this->set(compact('member'));
+		//pr($member);die;
+		$memberm=$this->MemberMeta->find('first',array('conditions'=>array('MemberMeta.member_id'=>$member_id)));
+		$this->set(compact('memberm'));
+	}
+	function admin_edit_member($id=null) {
+		//echo "hello".$id;die;
+  		$this->layout = 'admin';
+		$member_id = convert_uudecode(base64_decode($id));
+  		$this->set('id',$member_id);
+		$Categorylist = $this->AdminModule->find('threaded',array('conditions'=>array('AdminModule.active'=>'Yes')));
+		$this->set('Categorylist',$Categorylist);
+		//pr($Categorylist);die;
+		$options = $this->Location->find('all',array('conditions'=>array('Location.active'=>'Yes'),'fields'=>array('Location.id','Location.name')));
+  		//pr($options);die;	  
+		$this->set('options',$options);
+		$business_cat = $this->BusinessCategory->find('all',array('conditions'=>array('BusinessCategory.active'=>'Yes'),'order'=>array('BusinessCategory.id ASC'))); 
+		$this->set(compact('business_cat'));
+		$business_type = $this->BusinessType->find('all',array('conditions'=>array('BusinessType.active'=>'Yes'),'order'=>array('BusinessType.id ASC'))); 
+		$this->set(compact('business_type'));  
+  		$members=$this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id)));
+  		$this->set('member',$members);
+		//pr($members);
+		//echo "hello".$id;die;
+		//...........for sub-admin permission......
+		$selected_permission = array();
+		$selected_module_id = array();
+		$selected_parent_id = array();
+		// pr($selected_permission);die;
+		//echo "hello";pr($members['ModulePermission']);
+		if($members['Member']['member_type']==2 && !empty($members['ModulePermission'])) {
+  			$permissions=$members['ModulePermission'];
+  			//pr($permissions);die;
+  			foreach($permissions as $permisn) {
+				//pr($permisn);die;
+  			    $selected_permission[$permisn['module_id']]=$permisn;
+      			if($permisn['view_permission']==1||$permisn['edit_permission']==1||$permisn['delete_permission']==1||$permisn['active_permission']==1||$permisn['email_permission']==1) {
+      				$selected_module_id[]=$permisn['module_id'];
+      			}         			
+  			}
+  			//$selected_parent_id = $this->AdminModule->find('first',array('conditions'=>array('AdminModule.id'=>$sub)));
+  			//pr($selected_permission);die;
+		}
+		//echo "hello".$id;die;
+		$selected_module_id=array_unique($selected_module_id);
+		//echo "hello".$id;
+		//pr($selected_module_id);die;
+		if(count($selected_module_id) ==1)
+			$selected_parent = $this->AdminModule->find('all',array('conditions'=>array('AdminModule.id'=>$selected_module_id,'AdminModule.active'=>'Yes')));
+		else if(!empty($selected_module_id))
+			$selected_parent = $this->AdminModule->find('all',array('conditions'=>array('AdminModule.id in'=>$selected_module_id,'AdminModule.active'=>'Yes')));
+		else
+			$selected_parent = array();
+			foreach($selected_parent as $selected_parent1) {
+				$selected_parent_id[]=$selected_parent1['AdminModule']['parent_id'];
+			}
+			//pr($selected_parent_id);die;
+			$selected_module_id=array_unique($selected_module_id);
+			$selected_parent_id=array_unique($selected_parent_id);
+			$this->set('selected_permission',$selected_permission);
+			$this->set('selected_module_id',$selected_module_id);
+			$this->set('selected_parent_id',$selected_parent_id);
+			//pr($selected_parent_id);die;
+			//pr($selected_permission);die;
+			//...........end of sub-admin permission......
+			//die;
+		if(!empty($this->data)) {
+			$data1 = $this->data;
+			$data1['Member']=$this->data['Member'];
+			$data1['Member']['dob'] = date('Y-m-d',strtotime(@$this->data['Member']['dob']));
+			if($data1['Member']['member_type']=='4') {
+			
+				$infomem=$this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id)));	
+				$memLoc = $infomem['Member']['location'];
+				$arr = explode(',',$infomem['Member']['news_location']);
+				array_push($arr,$this->request->data['Member']['location']);
+				$arr = array_unique($arr);
+				$str1 =implode(',',$arr);
+				$str = trim($str1,',');
+				$data1['Member']['news_location'] = $str;
+			}
+			$this->Member->id=$member_id;
+			if($this->Member->save($data1)) {
+				if($data1['Member']['member_type']=='3') {
+					$data1['MemberMeta']['start_date'] = @date('Y-m-d',strtotime($data1['MemberMeta']['start_date']));
+					$this->MemberMeta->save($data1);
+				}
+				//..........for subadmin module.........
+				//pr($_POST);
+				$module_permission=@$_POST['ModulePermission'];
+				//pr($module_permission);die;
+				$this->loadModel('ModulePermission');
+				if(!empty($module_permission)) {
+					//$i=0;
+					foreach($module_permission as $permission) {
+						$parent_selection=$permission['parentmodule_selection'];
+						//if($parent_selection) {
+							unset($permission['parentmodule_selection']);
+							//pr($permission);
+							foreach($permission as $perm) {
+								$final_permission=array();
+								//if($perm['subparent_selected']=='1') { 
+									//pr($perm);
+									$view_perm=(@$perm['view_permission']==1)?$perm['view_permission']:0;
+									$edit_perm=(@$perm['edit_permission']==1)?$perm['edit_permission']:0;
+									$active_perm=(@$perm['active_permission']==1)?$perm['active_permission']:0;
+									$delete_perm=(@$perm['delete_permission']==1)?$perm['delete_permission']:0;
+									$email_perm=($perm['email_permission']==1)?$perm['email_permission']:0;
+									$final_permission['ModulePermission']['member_id']=$member_id;
+									$final_permission['ModulePermission']['module_id']=$perm['module_id'];
+									$final_permission['ModulePermission']['view_permission']=$view_perm;		//pr($final_permission['ModulePermission']['view_permission']);
+									$final_permission['ModulePermission']['edit_permission']=$edit_perm;
+									$final_permission['ModulePermission']['active_permission']=$active_perm;
+									$final_permission['ModulePermission']['delete_permission']=$delete_perm;
+									$final_permission['ModulePermission']['email_permission']=$email_perm;
+									//pr($perm);
+									if ($perm['id']!=0) {
+									//echo $perm['id']."@update_below";
+									//pr($final_permission);
+									$final_permission['ModulePermission']['id']=$perm['id'];//$this->ModulePermission->save($final_permission); 
+									//$this->ModulePermission->clear();
+									$this->ModulePermission->updateAll(array('ModulePermission.view_permission'=>$view_perm,'ModulePermission.edit_permission'=>$edit_perm,'ModulePermission.active_permission'=>$active_perm,'ModulePermission.delete_permission'=>$delete_perm,'ModulePermission.email_permission'=>$email_perm),array('ModulePermission.id'=>$final_permission['ModulePermission']['id']));
+									/*if($a) {
+										echo "update";die;
+									}   */                             
+									// die;								
+								}
+								else {
+									// echo "else simple save";
+									// pr($final_permission);
+									$this->ModulePermission->create();
+									$this->ModulePermission->save($final_permission); 
+									// die;
+								}
+								// }
+							}
+							//die;
+						//}
+					}
+					//die;
+				}
+				//...........end for subadmin module.....
+				$this->Session->write('success','Member has updated successfully.');
+				$this->redirect(array('action'=>'admin_members',base64_encode(convert_uuencode($members['Member']['member_type']))));
+			}
+  		}
+	}
+	function admin_checkEditMemberEmail($id=NULL) {
+  		//echo $id;die;
+  		$email = trim($_REQUEST['data']['Member']['email']);
+  		$this->autoRender = false;
+  		$count = $this->Member->find('count',array('conditions'=>array('Member.email'=>$email,'Member.id NOT'=>$id)));
+  		if ($count) {
+  			echo "false";die;
+  		}
+  		else {
+  			echo "true";die;
+  		}		
+	}	
+	function send_otp() {
+		$email = trim($_REQUEST['email']);
+        $id = trim($_REQUEST['id']);
+        $original_string = array_merge(range(0,9), range('a','z'), range('A', 'Z'));
+   		$original_string = implode("", $original_string);
+        $ra = substr(str_shuffle($original_string), 0, 6);
+        $data1['Member']['password']= md5($ra);
+        $data1['Member']['status']='Active';
+        $this->Member->id=$id;
+        //pr($data1);die;
+        //echo base64_encode(convert_uuencode($member['Member']['member_type']));die;
+		if ($this->Member->save($data1)) { 
+			$emailTemp1= $this->EmailTemplate->find('first',array('conditions'=> array('EmailTemplate.alias' =>'supplier_otp')));
+			$mem_id = $id;
+			//echo $mem_id;die;
+			$common_template= $emailTemp1['EmailTemplate']['description'];
+			$link = HTTP_ROOT.'Suppliers/login';							
+			$link = "<a href='".$link."' style='text-decoration:none;color:#00aeef' target='_blank'>".__('Click here to update your profile.')."</a>";						
+			$common_template = str_replace('{DomainPath}',$_SERVER['HTTP_HOST'],$common_template);
+			$common_template = str_replace('{email}',$email,$common_template);
+			$common_template = str_replace('{password}',$ra,$common_template);
+			$common_template = str_replace('{link}',$link,$common_template);
+			// echo 'done';die;
+        	$emailz = new CakeEmail();
+			$emailz->template('common_template');
+			$emailz->emailFormat('both');
+			$emailz->viewVars(array('common_template'=>$common_template));
+			$emailz->to($email);
+			$emailz->from($emailTemp1['EmailTemplate']['from']);
+			$emailz->subject($emailTemp1['EmailTemplate']['subject']);
+			//echo '<pre>';print_r($common_template);die;
+			if($emailz->send())
+			{
+				$this->Session->write('success','Otp has been sent successfully.');		  
+			  echo 'done';die;
+			}
+			//echo 'done';die;
+			//$this->redirect(array('action'=>'members','ISxQYGAKYAo='));	
+													
+        }
+        else {
+			echo 'failed';die;
+        }  
+	}
+	function admin_checkCompanyRegistrationEdit($id=null) {
+		$val = trim($_REQUEST['data']['MemberMeta']['registration_no']);
+		$check = $this->MemberMeta->find('count',array('conditions'=>array('registration_no'=>$val,'member_id not'=>$id)));
+		if ($check) { 
+			echo 'false';die;
+		}
+		else {
+			echo 'true';die;
+		}
+	}
+  
+	function admin_checkCompanyRegistrationValEdit($id=null) {
+		$val = trim($_REQUEST['data']['MemberMeta']['vat_registration_no']);
+		$check = $this->MemberMeta->find('count',array('conditions'=>array('vat_registration_no'=>$val,'member_id not'=>$id)));
+		if($check) { 
+			echo 'false';die;
+		}
+		else  {
+			echo 'true';die;
+		}
+	}
+	function admin_email_member($id=null) {
+		$this->layout = 'admin';
+		$member_id = convert_uudecode(base64_decode($id));
+		//echo $member_id;die;
+		$this->set('id',$member_id); 
+		$members = $this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id)));
+		$this->set('member',$members);
+		//pr($members);die;
+		if(!empty($this->request->data)) {
+      		$data1 = $this->request->data;
+			$member_id = $data1['Member']['id'];
+			$mem_detail = $this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id),'fields'=>array('id','member_type','name','surname')));
+			
+			if($mem_detail['Member']['member_type']==3)
+			    $emailTemp1 = $this->EmailTemplate->find('first',array('conditions'=>array('EmailTemplate.alias'=>'member_email')));
+			else 
+			    $emailTemp1 = $this->EmailTemplate->find('first',array('conditions'=>array('EmailTemplate.alias'=>'cybercoupon_customer_email')));
+			
+			//echo "<pre>";print_r($emailTemp1);die;	
+			//pr($data1);
+			$name = $mem_detail['Member']['name']." ".$mem_detail['Member']['surname'];
+			$message = $data1['Member']['message'];
+			//pr($message);
+			//pr($name);         
+			$common_template = $emailTemp1['EmailTemplate']['description'];
+			//echo "<pre>";print_r($common_template);
+			$common_template = str_replace('{name}',$name,$common_template);
+			$common_template = str_replace('{message}',$message,$common_template);
+			$email1 = $data1['Member']['email'];		
+			//pr($email1);
+			$common_template = $data1['Member']['message'];
+			$email = new CakeEmail();
+			$email->template('common_template');
+			$email->emailFormat('both');
+			$email->viewVars(array('common_template'=>$common_template));
+			$email->to($email1);
+			$email->from($emailTemp1['EmailTemplate']['from']);
+			$email->subject($emailTemp1['EmailTemplate']['subject']);  
+            //$email->send();
+      		if ($email->send()) {
+				//echo '<pre>';print_r($email);die;
+				$this->Session->write('success','Email has been sent successfully.');
+				$this->redirect(array('action'=>'admin_members',base64_encode(convert_uuencode($mem_detail['Member']['member_type']))));
+      		}
+      		else {
+        		echo "<h1>Message Does not send ! Some error occur.";
+      		}		
+    	}			
+	}
+	
+	function admin_reconcile($id=null) {
+  		$this->layout='admin';
+  		$this->loadModel('OrderDealRelation');
+  		$memberId=convert_uudecode(base64_decode($id));
+  		//echo $memberId;die;
+  		$count=$this->OrderDealRelation->query('SELECT COUNT(*)  FROM order_deal_relations INNER JOIN deals on order_deal_relations.deal_id=deals.id where deals.member_id=64');
+  		$redeem =$this->OrderDealRelation->find('all',array('conditions'=>array('Deal.member_id'=>$memberId),'group'=>array('OrderDealRelation.deal_id','OrderDealRelation.deal_option_id')));
+  		//$redeem = $this->OrderDealRelation->find('all');	
+  		//echo $memberId;		
+  		//pr($count);
+  		//pr($redeem);die;
+    }
+    function admin_sendpdf($id=null) {
+		$this->layout='admin';
+		//$email = trim($_REQUEST['email']);
+      //$id = trim($_REQUEST['id']);
+		$member_id = convert_uudecode(base64_decode($id));
+		$this->set('id',$member_id); 
+		$members = $this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id)));
+		//echo $members['Member']['email'];
+		$this->set('member',$members);
+		//pr($_FILES);die;
+		//pr($members);die;
+		//pr($this->request->data);
+		
+			$data=$this->request->data;	
+			$names=$members['Member']['name']." ".$members['Member']['surname'];
+			$memberEmail=$members['Member']['email'];
+			
+			/*--------------------------Email start----------------------------------*/
+			
+			$emailTemp1= $this->EmailTemplate->find('first',array('conditions'=> array('EmailTemplate.alias' =>'1st_step_approval')));
+			//pr($emailTemp1);	die;	
+			$destLarge = realpath('../../app/webroot/img/data/first_step_approval').'/' ;	
+			//pr($destLarge);die;			
+			$common_template= $emailTemp1['EmailTemplate']['description'];
+			$common_template = str_replace('{DomainPath}',$_SERVER['HTTP_HOST'],$common_template);
+			$common_template = str_replace('{name}',$names,$common_template);
+			$pdfTitle[] = $destLarge.$emailTemp1['EmailTemplate']['first_step_approval'];		
+			$email = new CakeEmail();
+			$email->template('common_template');
+			$email->emailFormat('both');
+			$email->viewVars(array('common_template'=>$common_template));       
+			$email->to($memberEmail);
+			//$email->cc('promatics.gautam@gmail.com');
+			$email->from($emailTemp1['EmailTemplate']['from']);
+			$email->subject($emailTemp1['EmailTemplate']['subject']);  
+			//$pdfTitle; die;
+			//pr($email);                        
+			//echo '<pre>';print_r($common_template);die;
+			
+			if(@$pdfTitle!='' and @$emailTemp1['EmailTemplate']['pdf_send']=='Yes')
+			{
+			   $email->attachments($pdfTitle);
+			}
+			//$email->send();	
+			if($email->send())
+			{
+            $this->Member->updateAll(array('Member.first_step_approval'=>"'Yes'"),array('Member.id'=>$member_id));
+				$this->Session->write('success','1st step approval is successfull');
+				$this->redirect(array('action'=>'admin_members',base64_encode(convert_uuencode($members['Member']['member_type']))));					
+			}
+    	
+    		
+    }
+    function admin_resend_customer_activation($customer_id=NULL)
+    {
+         $this->autoRender=false;			
+			$data1=$this->request->data;
+		   $customer_decodeid = convert_uudecode(base64_decode($customer_id));
+			
+			$resend_customer=$this->Member->find('first',array('conditions'=>array('Member.id'=>$customer_decodeid,'Member.member_type'=>4),'fields'=>array('id','member_type','name','email')));              
+         $member_type=$resend_customer['Member']['member_type'];
+			$member_type_encode=base64_encode(convert_uuencode($resend_customer['Member']['member_type']));			
+			if(!empty($resend_customer))
+			{
+				$activation_code = sha1(microtime());
+				if($this->Member->updateAll(array('Member.activation'=>'"' .$activation_code.'"','Member.status'=>'"Inactive"'),array('Member.id'=>$customer_decodeid)))
+				{
+				   $emailTemp1= $this->EmailTemplate->find('first',array('conditions'=> array('EmailTemplate.alias' =>'user_registration')));
+					
+					$common_template= $emailTemp1['EmailTemplate']['description'];
+					$link = HTTP_ROOT.'Customers/activate_account/'.$customer_id."/".$activation_code;							
+					$link = "<a href='".$link."' style='text-decoration:none;color:#00aeef' target='_blank'>".__('Click here to activate your account')."</a>";						
+					$common_template = str_replace('{DomainPath}',$_SERVER['HTTP_HOST'],$common_template);
+					$common_template = str_replace('{contact_person}',$resend_customer['Member']['name'],$common_template);
+					$common_template = str_replace('{link}',$link,$common_template);
+					$email = new CakeEmail();
+					$email->template('common_template');
+					$email->emailFormat('both');
+					$email->viewVars(array('common_template'=>$common_template));       
+					$email->to($resend_customer['Member']['email']);
+					$email->from($emailTemp1['EmailTemplate']['from']);
+					$email->subject($emailTemp1['EmailTemplate']['subject']);                             
+					//echo '<pre>';print_r($common_template);die;
+					if($email->send())
+					{
+						$this->Session->write('success','Verification email for the customer has been sent successfully.');
+						$this->redirect(array('controller'=>'Members','action'=>'members/'.$member_type_encode));
+					}
+				}
+				else 
+				{
+					$this->Session->write('error','Something is going wrong. Please try again.');
+					$this->redirect(array('controller'=>'Members','action'=>'members/'.$member_type_encode));
+				}				
+				
+			}
+			else 
+			{
+				$this->Session->write('error','Something is going wrong. Please try again.');
+				$this->redirect(array('controller'=>'Members','action'=>'members/'.$member_type_encode));
+			}
+			
+	}
+	function admin_bulk_usermail()
+	{
+		$users=$this->Member->find('all',array('conditions'=>array('Member.id'=>$user_id,'Member.member_type'=>$member_typeid),'fields'=>array('Member.id','Member.name','Member.surname','Member.email'),'recursive'=>-1));
+		$email_template=$this->EmailTemplate->find('first',array('conditions'=>array('EmailTemplate.alias'=>'email_to_user_in_groups')));
+			
+		$addition_email['Member']=array('name'=>'Archive User','surname'=>'Cybercoupon','email'=>'richardarchives@gmail.com');
+		array_push($users,$addition_email);
+		foreach($users as $each_user)
+		{
+		   $email_description=$email_template['EmailTemplate']['description'];
+			$email_description=str_replace('{name}',$each_user['Member']['name'],$email_description);
+			$email=new CakeEmail();
+			$email->template('common_template');
+			$email->viewVars(array('common_template'=>$email_description));
+			$email->emailFormat('both');
+			$email->to($each_user['Member']['email']);
+			$email->subject($email_template['EmailTemplate']['subject']);
+			$email->from($email_template['EmailTemplate']['from']);
+			$email->send();
+		}
+		$this->Session->write('success','Email has been sent successfully.');
+		die;
+	}	
+	function admin_send_password($id=null) {
+		$this->layout = 'admin';
+		$member_id = convert_uudecode(base64_decode($id));
+		$this->set('id',$member_id); 
+		$mem_detail = $this->Member->find('first',array('conditions'=>array('Member.id'=>$member_id),'fields'=>array('id','email','member_type','name','surname')));	
+		
+		$new_password=$this->RandomStringGenerator(6);
+	    $pwd=md5($new_password);	    
+		$emailTemp1= $this->EmailTemplate->find('first',array('conditions'=>array('EmailTemplate.alias'=>'send_password')));
+		
+		$name=$mem_detail['Member']['name']." ".$mem_detail['Member']['surname'];
+		$emailid=$mem_detail['Member']['email'];
+		$password=$new_password;
+		
+		$common_template= $emailTemp1['EmailTemplate']['description'];
+		$common_template= str_replace('{name}',$name,$common_template);
+		$common_template= str_replace('{email}',$emailid,$common_template);
+		$common_template= str_replace('{password}',$password,$common_template);
+		$emailto=$mem_detail['Member']['email'];	
+		//echo "<pre>";print_r($common_template);die;
+		$email = new CakeEmail();
+		$email->template('common_template');
+		$email->emailFormat('both');
+		$email->viewVars(array('common_template'=>$common_template));
+		$email->to($emailto);
+		$email->cc('promatics.gurudutt@gmail.com');
+		$email->from($emailTemp1['EmailTemplate']['from']);
+		$email->subject($emailTemp1['EmailTemplate']['subject']);  
+		if($email->send()) {
+			$this->Member->updateAll(array('Member.password'=>"'".$pwd."'"),array('Member.id'=>$mem_detail['Member']['id'],'Member.member_type'=>'3'));
+			$this->Session->write('success','New Password send to your email account successfully !');
+			$this->redirect(array('action'=>'admin_members',base64_encode(convert_uuencode($mem_detail['Member']['member_type']))));
+		}
+		else {
+			echo "<h1>Password Does not send ! Some error occur.";
+		}		
+	}
+}	
+?>

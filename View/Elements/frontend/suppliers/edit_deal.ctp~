@@ -1,0 +1,793 @@
+<script>
+	$(document).ready(function(){
+		var deal_id = $('.edit_deal_id').val();
+ 		$('#editDealForm').validate({
+ 			ignore: [],
+	   	rules: {
+		     	"data[Deal][name]": {
+		       	remote: {
+		        	    url: ajax_url+'deals/unique_deal/'+deal_id
+		        	}
+		     	},
+		     	"data[Deal][category]": {
+		     		remote: {
+		        	    url: ajax_url+'deals/parent_category'
+		        	}
+		     	},    
+		     	"data2[Deal][selling_price]": {
+		        cus_no:true
+		     	},
+		     	"data2[Deal][discount]": {
+		      	cus_no:true,
+		        	range: [0, 100]
+		     	},
+		     	"data[Deal][delivery_option]": {
+		     		required:true,
+		     	}
+	   	},
+	   	messages: {
+	   		"data[Deal][name]": {
+	        		remote:'This deal name already exist'
+	     		},
+            "data[Deal][category]": {
+	        		remote:'Please select any subcategory.'
+	     		},
+	     		"data2[Deal][selling_price]": {
+	        		//required:'required'
+	     		},
+	     		"data2[Deal][discount]": {
+	        		//required:'required'
+	     		},
+	     		"data[Deal][delivery_option]": {
+		     			required:'Please select one of these options',
+		     	}
+	     	}
+	});
+	
+   $('.option1').each(function(){
+        if($(this).is(':checked'))
+        {
+				$(this).siblings('div.optional_field').slideDown();
+               $(this).siblings('div.optional_field').find('input').addClass('required');
+               
+               $(this).parent('div').next('div').children('div.optional_field').slideDown();
+               $(this).parent('div').next('div').children('div.optional_field').find('input').addClass('required');
+               
+               $(this).parent('div').next('div').next('div').children('div.optional_field').slideDown();
+               $(this).parent('div').next('div').next('div').children('div.optional_field').find('input').addClass('required');             	
+            	
+        }
+		  else
+        {
+				$(this).siblings('div.optional_field').slideUp();
+               $(this).siblings('div.optional_field').find('input').removeClass('required');
+               
+               $(this).parent('div').next('div').children('div.optional_field').slideUp();
+               $(this).parent('div').next('div').children('div.optional_field').find('input').removeClass('required');
+               
+               $(this).parent('div').next('div').next('div').children('div.optional_field').slideUp();
+               $(this).parent('div').next('div').next('div').children('div.optional_field').find('input').removeClass('required');             	
+            	
+        }
+    	
+    })	
+	
+	$('.cancel_editing_deal').click(function(){
+		$('.hide_div_block_deal').show(500);
+		$('.edit_field_div1_deal').show(500);
+		$('.show_right_div_deal ').hide();
+	});
+	
+});
+</script>
+
+<script>
+$(document).ready(function(){
+		var d= new Date();
+    	var day = d.getDate();
+    	var day2 = d.getDate()+1;
+    	var month = d.getMonth()+1;
+		var year = d.getFullYear();
+    	//var current_date=year+'/'+month+'/'+day;
+    	var current_date=day+" "+month+" "+year;	
+	$('.mselect').multiselect({
+		includeSelectAllOption: false
+   });	
+   $('.newsletterdate').datetimepicker({
+		timepicker:false,
+		format:'d M Y',
+		scrollInput:false,
+		minDate:current_date						
+	});
+		
+});
+</script>
+<script type="text/javascript" >
+$(document).ready(function(){
+   	var d= new Date();
+    	var day = d.getDate();
+    	var day2 = d.getDate()+1;
+    	var month = d.getMonth()+1;
+   	var year = d.getFullYear();
+    	//var current_date=year+'/'+month+'/'+day;
+    	var current_date=day+" "+month+" "+year;
+			
+			$('.startdate_buy').datetimepicker({
+				timepicker:false,
+				format:'d M Y',
+				scrollInput:false,
+				//minDate:current_date,
+				onSelectDate:function(selectedDate){ 
+				   
+				   $(':input[name="data[Deal][redeem_to]"]').val('');
+	     			$(':input[name="data[Deal][redeem_from]"]').val('');
+	     			 
+					$('.enddate_buy').datetimepicker({
+						timepicker:false,
+						format:'d M Y',
+						scrollInput:false,
+						minDate:selectedDate
+				   });
+				   $('.startdate_redeem').datetimepicker({
+						timepicker:false,
+						format:'d M Y',
+						scrollInput:false,
+						minDate:selectedDate
+				   })	
+					
+				   //$('.enddate_buy').datetimepicker("option", { minDate: $(".startdate_buy").datetimepicker('getDate')})
+				   
+				
+				}
+			});
+  	 	
+	
+			$('.enddate_buy').datetimepicker({
+				timepicker:false,
+				format:'d M Y',
+				scrollInput:false,
+				onSelectDate:function(selectedDate){ 
+				   
+	     			var buy_from=$(':input[name="data[Deal][buy_from]"]').val();
+	     			if(buy_from!='')
+	     				var start_redeem_min=new Date(buy_from);
+				   else
+				   	var start_redeem_min=current_date;
+				   	
+				   
+				   $('.startdate_redeem').datetimepicker({
+						timepicker:false,
+						format:'d M Y',
+						scrollInput:false,
+						minDate:start_redeem_min
+				   })
+				   
+				  var startdate_redeem=$(':input[name="data[Deal][redeem_from]"]').val();
+				  var enddate_buy=selectedDate;
+				   
+              if(enddate_buy!='' && startdate_redeem!='')
+              {
+              	   var enddate_buy=new Date(enddate_buy);
+              	   var startdate_redeem=new Date(startdate_redeem);
+              	
+              	   if(Date.parse(enddate_buy) > Date.parse(startdate_redeem)) 
+					   {
+							var min_redeem_to = enddate_buy;
+						}
+						else
+						{
+							var min_redeem_to = startdate_redeem;
+						}
+						
+						$('.enddate_redeem').datetimepicker({
+							timepicker:false,
+							format:'d M Y',
+							scrollInput:false,
+							minDate:min_redeem_to
+					   })	
+              }
+              else if(enddate_buy!='')
+              {
+              	  $('.enddate_redeem').datetimepicker({
+							timepicker:false,
+							format:'d M Y',
+							scrollInput:false,
+							minDate:enddate_buy
+					   })
+              }				   
+				  else if(startdate_redeem!='')
+              {
+              	  $('.enddate_redeem').datetimepicker({
+							timepicker:false,
+							format:'d M Y',
+							scrollInput:false,
+							minDate:startdate_redeem
+					   })
+              }
+				   
+				   	
+				   
+				
+				}       
+			});		
+		
+	     $('.startdate_redeem').datetimepicker({
+				timepicker:false,
+				format:'d M Y',
+				scrollInput:false,
+				onSelectDate:function(selectedDate){ 
+
+
+              var startdate_redeem=selectedDate;
+				  var enddate_buy=$(':input[name="data[Deal][buy_to]"]').val();
+				   
+              if(enddate_buy!='' && startdate_redeem!='')
+              {
+              	   var enddate_buy=new Date(enddate_buy);
+              	   var startdate_redeem=new Date(startdate_redeem);
+              	
+              	   if(Date.parse(enddate_buy) > Date.parse(startdate_redeem)) 
+					   {
+							var min_redeem_to = enddate_buy;
+						}
+						else
+						{
+							var min_redeem_to = startdate_redeem;
+						}
+						
+						$('.enddate_redeem').datetimepicker({
+							timepicker:false,
+							format:'d M Y',
+							scrollInput:false,
+							minDate:min_redeem_to
+					   })	
+              }
+              else if(enddate_buy!='')
+              {
+              	  $('.enddate_redeem').datetimepicker({
+							timepicker:false,
+							format:'d M Y',
+							scrollInput:false,
+							minDate:enddate_buy
+					   })
+              }				   
+				  else if(startdate_redeem!='')
+              {
+              	  $('.enddate_redeem').datetimepicker({
+							timepicker:false,
+							format:'d M Y',
+							scrollInput:false,
+							minDate:startdate_redeem
+					   })
+              }
+              else
+              {
+              	  $('.enddate_redeem').datetimepicker({
+							timepicker:false,
+							format:'d M Y',
+							scrollInput:false,
+							minDate:current_date
+					   })
+              	
+              } 
+				
+				}
+			});
+  	 	
+	
+			$('.enddate_redeem').datetimepicker({
+				timepicker:false,
+				format:'d M Y',
+				scrollInput:false,
+				onSelectDate:function(selectedDate){ 
+				
+				}       
+			});
+	 
+});
+
+</script>	
+<style>
+.status_label
+{
+	 float: right;
+	 margin-right: 20px;
+	 padding:4px;
+}
+select.full
+{
+padding:4px;
+}
+label img {
+    border: 1px solid #22add6;
+    border-radius: 20px;
+    cursor: pointer;
+    padding: 3px;
+    width: 18px;
+}
+</style>
+
+
+<h1>Edit Deal</h1>
+<form id="editDealForm" method="post" enctype="multipart/form-data" action="<?php echo HTTP_ROOT.'Deals/edit_deal/'.base64_encode(convert_uuencode($edit_deal['Deal']['id']));?>">
+	<div class="under_line_div"></div>
+	<div class="col-lg-11 col-sm-12 col-md-12 col-xs-12 padding_0 ">
+	   <input type="hidden" class="edit_deal_id" name="data[Deal][id]" value="<?php echo $edit_deal['Deal']['id']?>" />		
+		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+			<div class="row">
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0 ">
+					<div class="form-group">
+						<label>Deal Title<em>*</em><label>
+					</div>
+				</div>
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="form-group">
+						<input id="deal_name" value='<?php echo $edit_deal["Deal"]["name"];?>' name="data[Deal][name]" type="text" class="form-control required"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+			<div class="row">
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0">
+					<div class="form-group">
+						<label>Upload Image (max 50kb)<em>*</em>  <label>
+								<img rel="tooltip" src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" title="Upload an image that you want your customers to see in their promotional newsletter. Make it as appealing as possible">
+							</label></label>
+					</div>
+				</div>
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="form-group">
+						<input name="deal_image" type="file"/>												
+					</div>
+				</div>
+			</div>
+			<div class="row">
+			   <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0 ">
+					
+				</div>
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="form-group">
+						<img  src="<?php echo IMPATH.'deals/'.$edit_deal['Deal']['image'];?>" height="200" width="200"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+			<div class="row">
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+					<div class="form-group">
+						<label>Customer Buying Date Range <em>*</em>
+						<label>
+						 <img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="The date/s during which a customer may purchase a product or service coupon"   /> </label>
+						</label>
+					</div>
+				</div>
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 padding_0">
+						<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 padding_0">
+							<div class="form-group">
+								<input value="<?php echo date('d M Y',strtotime($edit_deal['Deal']['buy_from']));?>" type="text" class="form-control startdate_buy required" readonly="readonly" rel="buy" name="data[Deal][buy_from]" >
+							</div>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 padding_0 text-center">
+							<div class="middle_to">
+								To
+							</div>
+						</div>
+						<div class="col-lg-5 col-xs-5 col-md-5 col-xs-5 padding_0">
+							<div class="form-group">
+								<input value="<?php echo date('d M Y',strtotime($edit_deal['Deal']['buy_to']));?>" type="text" class="form-control enddate_buy required" readonly="readonly" rel="buy" name="data[Deal][buy_to]" >
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 hide_readmee">
+			<div class="row">
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+					<div class="form-group ">
+						<label>Customer Redeeming Deadline<em>*</em>
+						<label>
+						 <img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="The date by which a customer must use or redeem a purchased coupon, after which date it expires and is invalid"   /> </label>
+					   </label>
+					</div>
+				</div>
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 padding_0">
+						<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 padding_0">
+							<div class="form-group">
+								<input value="<?php echo date('d M Y',strtotime($edit_deal['Deal']['redeem_from']));?>" type="text" class="form-control startdate_redeem required" readonly="readonly" rel="redeem" name="data[Deal][redeem_from]">
+							</div>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 padding_0 text-center">
+							<div class="middle_to">
+								To
+							</div>
+						</div>
+						<div class="col-lg-5 col-xs-5 col-md-5 col-xs-5 padding_0">
+							<div class="form-group">
+								<input value="<?php echo date('d M Y',strtotime($edit_deal['Deal']['redeem_to']));?>" type="text" class="form-control enddate_redeem required" readonly="readonly" rel="redeem" name="data[Deal][redeem_to]">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+					<!--........................-->							
+		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+			<div class="row">
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+					<div class="form-group">
+						<label>Deal's Category<em>*</em><label>
+					</div>
+				</div>									
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="form-group">
+						<select name="data[Deal][category]" class="required" >						
+							<option value="">Select Category</option>
+                  	<?php 
+                  	foreach ($deal_category as $cat_id=>$cat_name)
+                  	{
+                  		if(in_array($cat_id,$parent_catog_id))
+								{
+                  	?>
+									<option value="0"><?php echo $cat_name; ?></option>
+							  <?php
+							   }
+								else
+								{ 
+								?>
+								     <option value="<?php echo $cat_id;?>" <?php if($edit_deal['Deal']['category'] == $cat_id) echo 'selected="selected"';?> >
+									     <?php echo $cat_name; ?>
+									  </option>
+								<?php
+								 } 
+							 } 
+							 ?>
+						</select>														
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+			<div class="row">
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+					<div class="form-group">
+						<label>Price includes shipping<em>*</em><label>
+					</div>
+				</div>									
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="form-group">
+						<select name="data[Deal][shipping_price]" class="required" >						
+							<option value="">Select </option>
+							<option <?php if($edit_deal['Deal']['shipping_price'] =='Yes') echo 'selected="selected"';?> value="Yes">Yes</option>
+							<option <?php if($edit_deal['Deal']['shipping_price'] =='No') echo 'selected="selected"';?> value="No">No</option>												
+						</select>														
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+			<div class="row">
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0 ">
+					<div class="form-group">
+						<label>Voucher Quantity:<em>*</em>
+						<label>
+						<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="The total number of vouchers you are prepared to offer for this deal"   /> 
+						</label>
+						</label>																			
+						</div>
+				</div>
+				<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+					<div class="form-group">
+						<input id="deal_quantity" name="data[Deal][quantity]" value="<?php echo $edit_deal['Deal']['quantity']; ?>" type="text" class="form-control required"/>
+					</div>
+				</div>
+			</div>
+		</div>						
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>Deal Location<em>*</em><label>
+						</div>
+					</div>
+					<!--<input type="hidden" class="location_hidn required" value="<?php if(@$location_checked==1){echo '1';}?>" />-->
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">											
+							<select name="data[Deal][location][]" class="required">					                    
+								<?php
+									$location_checked='';
+									foreach ($nearest_location as $loc)
+									{
+										$multiple_loc=explode(',',$edit_deal['Deal']['location']);
+										if(in_array($loc['Location']['id'],$multiple_loc))
+										{                            
+											$location_checked=1;
+										}
+										?>
+										<option value="<?php echo $loc['Location']['id'];?>" <?php if(in_array($loc['Location']['id'],$multiple_loc)) echo 'selected="selected"';?> >
+										<?php echo $loc['Location']['name']; ?>
+										</option>
+									<?php
+									}
+								?>
+							</select>																				
+						</div>
+						<!--<input class="location_hidn required" type="hidden" value=""/>	-->
+					</div>
+				</div>
+			</div>										
+					<!--......................-->
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>Regular Selling Price<em>*</em>
+							<label>
+							<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="Enter the Regular Selling Price, excluding currency symbol. "   /> 
+							</label>											
+							<label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<input type="text" class="form-control required sellingprice" name="data[Deal][selling_price]" value="<?php echo $edit_deal['Deal']['selling_price']; ?>" />
+						</div>
+					</div>
+				</div>
+			</div>
+					
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>% Discount<em>*</em>
+								<label>
+									<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="This is the percentage discount that you are offering customers for this particular deal"/>
+								</label>
+							<label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<!--<input id="discount1" type="text" class="form-control required makeDiscount" name="data2[0][DealOption][discount]" value="<?php $data['0']['DealOption']['discount']; ?>"/>
+							 -->
+							 <input type="hidden" value="<?php echo $edit_deal['DealOption'][0]['id'];?>" name="data2[0][DealOption][id]">
+   						 <input class="form-control required  makeDiscount"  maxlength="2" data-discountindex="discount1" value="<?php echo $edit_deal['DealOption'][0]['discount'];?>" name="data2[0][DealOption][discount]">												
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>Discounted Selling Price<em>*</em><label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<!--<input id="discount_price1" type="text" class="required form-control" readonly="readonly" name="data2[0][DealOption][discount_selling_price]" value="<?php $data['0']['DealOption']['discount_selling_price']; ?>" />-->
+							<input readonly="readonly" class="form-control required number discount1_price" name="data2[0][DealOption][discount_selling_price]" type="text" value="<?php echo $edit_deal['DealOption'][0]['discount_selling_price'];?>"/>
+						</div>
+					</div>
+				</div>
+			</div>
+    				
+   		<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0">
+						<div class="form-group ">
+							<label>Description<em>*</em>
+							
+								 <img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="Add the description about your deals in point form"/>
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<textarea name="data[Deal][description]"  class="form-control required" style="color:#333;"><?php echo $edit_deal['Deal']['description'] ?></textarea>
+						</div>
+					</div>
+				</div>
+			</div>							
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0">
+						<div class="form-group ">
+							<label>Fine Print<em>*</em>
+								<label>
+									<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="Insert any specific terms or conditions that relate to this specific deal ie. if a restaurant this could be 'only redeemable for lunchtimes' or if an airline, this could be 'only redeemable to fly on specific days' or if a guest house this could be 'only redeemable for occupancy' for during week days'"/>
+								</label>
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<textarea name="data[Deal][highlights]" class="form-control required" style="color:#333;"><?php echo $edit_deal['Deal']['highlights'] ?></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0">
+						<div class="form-group ">
+							<label>Select Newsletter Date
+								<label>
+									<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="You can select the valuable date for sending this deal as a newsletter for the customers.">
+								</label>
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<input value="<?php echo date('d M Y',strtotime($edit_deal['Deal']['newsletter_sent_date']));?>" type="text" class="form-control newsletterdate" readonly="readonly" name="data[Deal][newsletter_sent_date]" >
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 m_padding_0">
+						<div class="form-group ">
+							<label>Delivery Options (1 option is mandatory)<em>*</em>
+								
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group ">
+							<p style="color:black;">
+								1) This is a physical product that requires delivery and the discounted
+								selling price includes nationwide door-to-door delivery by courier.
+								<input value="physical" class="required" name="data[Deal][delivery_option]" type="radio" <?php if($edit_deal['Deal']['delivery_option']=='physical'){ ?>checked="true" <?php } ?> />
+							</p>
+							<p style="color:black;">
+								2)This is a physical product that requires delivery and the discounted selling price does NOT include nationwide door-to-door delivery by courier.
+								<input value="physical-not-delivery" name="data[Deal][delivery_option]" type="radio" <?php if($edit_deal['Deal']['delivery_option']=='physical-not-delivery'){ ?>checked="true" <?php } ?> >
+							</p>
+							<p style="color:black;">
+								3) This is not a physical product and does not require delivery, and the
+								customer will use the service via receiving a voucher only.
+								<input value="non-physical" name="data[Deal][delivery_option]" type="radio" <?php if($edit_deal['Deal']['delivery_option']=='non-physical'){ ?>checked="true" <?php } ?> >
+							</p>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label> Additional Deal Selling Options:
+							<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="You will use these optional fields if you wish to offer a deal that has an
+ additional 1 or 2 choices, ie, if you wish to promote, for example, 3
+ options of Yoga classes, with the 1st one being X price for 3 lessons per
+ week, that would be your main deal listed above, and then a 2nd option of Y
+ price for 5 lessons per week, and a 3rd option of Z price for 7 lessons per
+ week."/>
+																
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<input type="text" class="form-control" name="data2[0][DealOption][option_title]"/>
+						</div>
+					</div>
+				</div>
+			</div>
+					
+			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<input class="option1" type="checkbox" <?php if(trim($edit_deal['DealOption'][1]['option_title'])!='' || trim($edit_deal['DealOption'][1]['discount'])!=''){?> checked="true" <?php } ?>>
+				<label for="option1">Optional Fields <em>1:-</em></label>
+				<div class="row optional_field" style="display:none;">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>Discount Option Title 2</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+						   <input type="hidden" value="<?php echo $edit_deal['DealOption'][1]['id'];?>" name="data2[1][DealOption][id]"/>
+							<input type="text" class="form-control option1_input" name="data2[1][DealOption][option_title]" value="<?php echo $edit_deal['DealOption'][1]['option_title'];?>"/>
+						</div>
+					</div>
+				</div>
+		 	</div>
+ 			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row optional_field" style="display:none;">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>% Discount 1
+								<label>
+									<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="Describe your product/service in brief point form"/>
+								</label>
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<input type="text" class="form-control option1_input makeDiscount" name="data2[1][DealOption][discount]" value="<?php echo $edit_deal['DealOption'][1]['discount'];?>" data-discountindex="discount2" />
+						</div>
+					</div>
+				</div>
+			</div>
+ 			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row optional_field" style="display:none;">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>Discounted Selling Price 1</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<input type="text" class="form-control discount2_price" value="<?php echo $edit_deal['DealOption'][1]['discount_selling_price'];?>" readonly="readonly" name="data2[1][DealOption][discount_selling_price]"/>
+						</div>
+					</div>
+				</div>
+			</div>
+ 			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+  				<input class="option1" type="checkbox" <?php if(trim($edit_deal['DealOption'][2]['option_title'])!='' || trim($edit_deal['DealOption'][2]['discount'])!=''){?> checked="true" <?php } ?> >
+				<label for="" >Optional Fields <em>2:-</em></label>           
+				<div class="row optional_field" style="display:none;">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>Discount Option Title 3</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+						   <input type="hidden" value="<?php echo $edit_deal['DealOption'][2]['id'];?>" name="data2[2][DealOption][id]"/>
+							<input type="text" class="form-control option2_input" name="data2[2][DealOption][option_title]" value="<?php echo $edit_deal['DealOption'][2]['option_title'];?>"/>
+						</div>
+					</div>
+				</div>
+			</div>
+  			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row optional_field" style="display:none;">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>% Discount 2
+								<label>
+									<img src="<?php echo HTTP_ROOT;?>img/frontend/tooltip.png" rel="tooltip" title="Describe your product/service in brief point form"/>
+								</label>
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<input type="text" class="form-control option2_input makeDiscount" data-discountindex="discount3" name="data2[2][DealOption][discount]" value="<?php echo $edit_deal['DealOption'][2]['discount'];?>"/>
+						</div>
+					</div>
+				</div>
+			</div>
+ 			<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 ">
+				<div class="row optional_field" style="display:none;">
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12  m_padding_0">
+						<div class="form-group">
+							<label>Discounted Selling Price 2</label>
+						</div>
+					</div>
+					<div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 padding_0">
+						<div class="form-group">
+							<input type="text" class="form-control discount3_price" readonly="readonly" name="data2[2][DealOption][discount_selling_price]" value="<?php echo $edit_deal['DealOption'][2]['discount_selling_price'];?>"/>
+						</div>
+					</div>
+				</div>
+			</div>
+					
+							
+			<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12  col-lg-offset-6 col-sm-offset-6 col-md-offset-6 col-xs-offset-0 padding_0">
+				<div class="save_btn">
+				   <input type="submit" value="Save" class="btn btn-primary" />
+     				<a href="javascript:void(0);" class="btn btn-success cancel_editing_deal">Cancel</a>
+				</div>
+			</div>
+	</div>
+</form><!--  Deal Form Ends    -->	

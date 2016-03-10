@@ -1,0 +1,649 @@
+<?php echo $this->Html->script('backend/development/ui.datepicker.js');
+  echo $this->Html->css('backend/smooth.css');
+?>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+	
+$('.makeDiscount').live('input',function(){
+  $('.realDiscount').val('');
+  var vals;
+  var intRegex = /^\d+$/;
+var floatRegex = /^((\d+(\.\d *)?)|((\d*\.)?\d+))$/;
+  $('.makeDiscount').each(function(){
+   vals = $(this).val();
+   //alert(vals)
+   if(vals != "" && (intRegex.test(vals) || floatRegex.test(vals)))
+   {
+     discountFun();
+   }
+   else 
+   return false;
+  })
+function discountFun()
+{
+
+$('#discount_price1').val(); 
+price = $('input[name="data[Deal][selling_price]"]').val(); 
+//alert(price);
+dis = $('#discount1').val();
+//alert(price)
+//alert(dis)
+if(price != "" && dis !="" && parseInt(dis) <= 100)
+{
+	real = price - ((price * dis) / 100);
+   $('#discount_price1').val(real);
+}
+else
+{
+	$('#discount_price1').val('');
+	}
+}   
+})	
+
+$('.makeDiscount1').live('input',function(){
+  $('.realDiscount').val('');
+  var vals;
+  var intRegex = /^\d+$/;
+var floatRegex = /^((\d+(\.\d *)?)|((\d*\.)?\d+))$/;
+  $('.makeDiscount').each(function(){
+   vals = $(this).val();
+   if(vals != "" && (intRegex.test(vals) || floatRegex.test(vals)))
+   {
+     discountFun();
+   }
+   else 
+   return false;
+  })
+function discountFun()
+{
+
+$('#discount_price2').val(); 
+price = $('input[name="data[Deal][selling_price]"]').val(); 
+dis = $('#discount2').val();
+//alert(price)
+//alert(dis)
+if(price != "" && dis !="" && parseInt(dis) <= 100)
+{
+	real = price - ((price * dis) / 100);
+   $('#discount_price2').val(real);
+}
+}   
+})		
+	
+$('.makeDiscount2').live('input',function(){
+  $('.realDiscount').val('');
+  var vals;
+  var intRegex = /^\d+$/;
+var floatRegex = /^((\d+(\.\d *)?)|((\d*\.)?\d+))$/;
+  $('.makeDiscount').each(function(){
+   vals = $(this).val();
+   if(vals != "" && (intRegex.test(vals) || floatRegex.test(vals)))
+   {
+     discountFun();
+   }
+   else 
+   return false;
+  })
+function discountFun()
+{
+$('#discount_price3').val(); 
+price = $('input[name="data[Deal][selling_price]"]').val(); 
+dis = $('#discount3').val();
+//alert(price)
+//alert(dis)
+if(price != "" && dis !="" && parseInt(dis) <= 100)
+{
+	real = price - ((price * dis) / 100);
+   $('#discount_price3').val(real);
+}
+}   
+})	
+	
+	var memb = $('#mem_id').val();
+	$('#frm').validate({
+			rules:
+			{
+				"data[Member][email]":
+				{
+					required:true,
+					email:true,
+					remote:ajax_url+'admin/Members/checkEditMemberEmail/'+memb
+				},
+				"data[Deal][category]": {
+		     		remote: ajax_url+'deals/parent_category'
+		     	}, 
+				"data[Deal][shipping_price]": {
+		     		required:true,
+		     	}, 
+				"data[Member][password]":
+				{
+					required:true,
+					minlength: 6
+				},
+				"data[Member][con_password]":
+				{
+					required:true,
+					equalTo:'#pwd'
+				},
+				"data[Member][phone]":
+				{
+					required:true,
+					cus_phone:true
+				},
+				"data[Member][city]":
+				{
+					required:true,
+					//remote:ajax_url+'Members/checkMemberName'
+				},
+           "data[MemberMeta][website]":
+        {
+           //required:true,
+					complete_url:true
+        },
+        "data[MemberMeta][registration_no]":
+        {
+          required:true,
+          remote:ajax_url+'admin/Members/checkCompanyRegistrationEdit/'+memb
+        },
+			 "data[MemberMeta][vat_registration_no]":
+        {
+          required:true,
+          remote:ajax_url+'admin/Members/checkCompanyRegistrationValEdit/'+memb
+        },  
+				
+			},
+			messages:
+			{
+				"data[Member][email]":
+				{
+					required:'Please enter email.',
+					email:'Please enter valid email.',
+					remote:'Email address already exists.'
+				},
+				"data[Deal][category]":
+				{
+	        		remote:'Please select any subcategory.'
+	     		},
+				"data[Member][password]":
+				{
+					required:"This field is required.",
+					minlength: 'Password should be atleast 6 characters long.'
+				},
+				"data[Member][con_password]":
+				{
+					required:"This field is required.",
+					equalTo:'Password and confirm password does not match.'
+				},
+				"data[Member][city]":
+				{
+					required:"please enter city name.",
+					
+				},
+          "data[MemberMeta][website]":
+        {
+           //required:"This field is required.",
+					complete_url:"Please enter valid Url."
+        },
+        "data[MemberMeta][registration_no]":
+        {
+           required:'This field is required.',
+           remote: "This company is already registered with us."
+        },
+        "data[MemberMeta][vat_registration_no]":
+        {
+           required:'This field is required.',
+           remote: "This company is already registered with us."
+        },
+		"data[Deal][shipping_price]": {
+			required:'This field is required.',
+		},       
+				
+			}
+		
+		
+		});
+		
+		$.validator.addMethod("cus_phone", function(value, element) {
+		var pattern = /[A-Za-z_-£$%&*()}{@#~?><>,|=_¬]+/i;
+		return (!pattern.test(value));
+		}, "Not valid phone number.");
+jQuery.validator.addMethod("complete_url", function(val, elem) {
+    // if no url, don't do anything
+    if (val.length == 0) { return true; }
+
+    // if user has not entered http:// https:// or ftp:// assume they mean http://
+    if(!/^(https?|ftp):\/\//i.test(val)) {
+        val = 'http://'+val; // set both the value
+        $(elem).val(val); // also update the form element
+    }
+    // now check if valid url
+    // http://docs.jquery.com/Plugins/Validation/Methods/url
+    // contributed by Scott Gonzalez: http://projects.scottsplayground.com/iri/
+    return /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(val);
+});
+
+		
+	});
+	
+	
+
+
+	$(function() {
+		var year = (new Date()).getFullYear()
+		var current_date= new Date();
+		$( ".buy_from" ).datepicker({
+			dateFormat:'d M yy',
+			yearRange:'2000:'+year,
+			changeMonth: true, 
+			changeYear: true,
+			timepicker:false,
+			maxDate:current_date,
+		});
+	})
+	$(function() {
+		var year = (new Date()).getFullYear() + 5;
+		var current_date= new Date();
+		$( ".buy_to" ).datepicker({
+			dateFormat:'d M yy',
+			yearRange:'2000:'+year,
+			changeMonth: true, 
+			changeYear: true,
+			timepicker:false,
+			minDate:current_date
+			//maxDate:current_date
+		});
+	})
+	
+	$(function() {
+		var year = (new Date()).getFullYear()
+		var current_date= new Date();
+		$( ".redeem_from" ).datepicker({
+			dateFormat:'d M yy',
+			yearRange:'2000:'+year,
+			changeMonth: true, 
+			changeYear: true,
+			timepicker:false,
+			maxDate:current_date,
+		});
+	})
+	$(function() {
+		var year = (new Date()).getFullYear() + 5;
+		var current_date= new Date();
+		$( ".redeem_to" ).datepicker({
+			dateFormat:'d M yy',
+			yearRange:'2000:'+year,
+			changeMonth: true, 
+			changeYear: true,
+			timepicker:false,
+			minDate:current_date
+			//maxDate:current_date
+		});
+	});
+</script>	
+	<script type="text/javascript" >
+	$(document).ready(function(){
+    /*var d= new Date();
+    var day = d.getDate();
+    var day2 = d.getDate()+1;
+    var month = d.getMonth()+1;
+    var year = d.getFullYear();
+    var current_date=year+'/'+month+'/'+day;
+	 $('.startdate').focus(function(){
+		  var opt = $(this).attr('rel');
+    if($(':input[name="data[Deal]['+opt+'_to]"]').val()!='')
+		{
+			var ens = $(':input[namElecticale="data[Deal]['+opt+'_to]"]').val().split(' ');
+			var en = ens[0].split('-');
+			var end_date = en[0]+'/'+en[1]+'/'+(parseInt(en[2])-1);
+			$('.startdate').datetimepicker({
+			timepicker:false,
+			format:'Y-m-d',
+			scrollInput:false,
+			maxDate:end_date,
+			minDate:current_date
+			})
+		}
+		else
+		{
+			$('.startdate').datetimepicker({
+			timepicker:false,
+			format:'Y-m-d',
+			scrollInput:false,
+			minDate:current_date
+			
+		})
+	}
+});
+	
+	
+	$('.enddate').focus(function(){
+     var opt = $(this).attr('rel');
+		 if($(':input[name="data[Deal]['+opt+'_from]"]').val()!='')
+		{
+			var ens = $(':input[name="data[Deal]['+opt+'_from]"]').val().split(' ');
+			var en = ens[0].split('-');
+			var start_date = en[0]+'/'+en[1]+'/'+(parseInt(en[2])+1);
+			$('.enddate').datetimepicker({
+			timepicker:false,
+			format:'Y-m-d',
+			scrollInput:false,
+			minDate:start_date,
+			//maxDate:current_date
+			
+		})		
+		}
+		else
+			{
+		  $('.enddate').datetimepicker({
+			timepicker:false,
+			format:'Y-m-d',
+			scrollInput:false,
+			minDate:year+'/'+month+'/'+day2
+			
+			})		
+			}
+			
+	});*/
+
+});
+</script>
+<style>
+.status_label
+{
+	 float: right;
+	 margin-right: 20px;
+	 padding:4px;
+}
+select.full
+{
+padding:4px;
+}
+</style>
+<script>
+function isNumericKey(e)
+{
+    if (window.event) { var charCode = window.event.keyCode; 
+	}
+    else if (e) { var charCode = e.which; }
+    else { return true; }
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) { return false; }
+    return true;
+}
+</script>
+<div id="page-layout">
+<div id="page-content">
+<div id="page-content-wrapper">
+<a href="<?php echo HTTP_ROOT;?>admin/manages/deals" class="ui-state-default ui-corner-all float-right ui-button">Back</a>
+<div class="inner-page-title">
+<h2>Edit Deal</h2>
+<span></span>
+</div>
+<?php //if($member['MemberType']['name']=='customer') {?>
+<form id="frm" method="post" enctype="multipart/form-data" action="<?php echo HTTP_ROOT.'admin/Manages/edit_deal/'.base64_encode(convert_uuencode($member['Deal']['id']))?>">
+	<fieldset>
+   	<div class="content-box content-box-header" style="border:none;">
+			<div class="column-content-box">   
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>
+	                Edit Deal's Information
+            </div>
+            <div class="content-box-wrapper">
+               <input name="data[Deal][id]" type="hidden" value="<?php echo $member['Deal']['id'];?>" />
+               <ul>
+               	  <li>
+                  	<label class="desc">Deal Title:<em>*</em></label>
+            						<div>
+            							<input  class="field text full required" name="data[Deal][name]" type="text" value='<?php echo $member["Deal"]["name"];?>'/>
+            						</div>
+                  </li>
+                  
+                  <li>
+                   	<label class="desc">Image:<em>*</em></label>
+                   	<div style="width:40%;float:left;">
+							<input  class="field text" name="deal_image" type="file" value="<?php echo $member['Deal']['image'];?>"/>
+							</div>
+							<div style="width:50%;margin-left:114px;">
+							<img  src="<?php echo IMPATH.'deals/'.$member['Deal']['image'];?>" height="200" width="200"/>
+							</div>							
+						
+                  </li>
+                 	<li>
+                    <label class="desc">Buying From:<em>*</em></label>
+						<div>
+						  <input class="field text full required startdate buy_from" rel="buy" readonly="readonly"  name="data[Deal][buy_from]"  type="text" value="<?php echo date('d M Y',strtotime($member['Deal']['buy_from']));?>"/>
+						</div>
+                  </li>
+                  <li>
+                    <label class="desc">Buying To:<em>*</em></label>
+						<div>
+						  <input class="field text full required enddate buy_to" rel="buy" readonly="readonly"  name="data[Deal][buy_to]"  type="text" value="<?php echo date('d M Y',strtotime($member['Deal']['buy_to']));?>"/>
+						</div>
+                  </li>
+						<li>
+                    <label class="desc">Redeeming From:<em>*</em></label>
+						<div>
+						  <input  class="field text full required redeem_from startdate" rel="redeem" readonly="readonly" name="data[Deal][redeem_from]"  type="text" value="<?php echo date('d M Y',strtotime($member['Deal']['redeem_from']));?>"/>
+						</div>
+                  </li>
+                  <li>
+                    <label class="desc">Redeeming To:<em>*</em></label>
+						<div>
+						  <input  class="field text full required redeem_to enddate" rel="redeem" readonly="readonly" name="data[Deal][redeem_to]"  type="text" value="<?php echo date('d M Y',strtotime($member['Deal']['redeem_to']));?>"/>
+						</div>
+                  </li>	
+                  <li>		  
+              		<label class="desc">Deal's Category<em>*</em></label>
+						<div class="inp_holder">
+						<!--<select name="data[Deal][category]" class="field text full required" >-->
+						<select name="data[Deal][category]" class="field text full required" >						
+							<option value="">Select Category</option>
+                  	<?php 
+                  	foreach ($deal_category as $cat_id=>$cat_name)
+                  	{
+                  		if(in_array($cat_id,$parent_catog_id))
+								{
+                  	?>
+									<option value="0"><?php echo $cat_name; ?></option>
+							  <?php
+							   }
+								else
+								{ 
+								?>
+								     <option value="<?php echo $cat_id;?>" <?php if($member['Deal']['category'] == $cat_id) echo 'selected="selected"';?> >
+									     <?php echo $cat_name; ?>
+									  </option>
+								<?php
+								 } 
+							 } 
+							 ?>
+						</select>
+						</div>
+						</li>
+					<li>		  
+               	<label class="desc">Price includes shipping<em>*</em></label>
+					<div class="inp_holder">
+					<select name="data[Deal][shipping_price]" class="required">
+						<option value="">Select shipping</option>
+						<option <?php if($member['Deal']['shipping_price'] =='Yes') echo 'selected="selected"';?> value="Yes">Yes</option>
+						<option <?php if($member['Deal']['shipping_price'] =='No') echo 'selected="selected"';?> value="No">No</option>												
+					</select>
+					</div>
+					</li>
+					<li>
+						<label class="desc">Delivery Option:<em>*</em></label>
+						<div>
+							<select name="data[Deal][delivery_option]" class="field text full required" >						
+								<option value="">Select Category</option>
+								<option value="physical" <?php if($member['Deal']['delivery_option'] =='physical') echo 'selected="selected"';?> > Physical</option>
+								<option value="non-physical" <?php if($member['Deal']['delivery_option'] =='non-physical') echo 'selected="selected"';?>>Non Physical</option>								
+							</select>
+						</div>
+                  </li>
+				  
+						<li>
+                  	<label class="desc">Voucher Quantity:<em>*</em></label>
+            			<div>
+            				<input  class="field text full required" name="data[Deal][quantity]" type="text" value="<?php echo $member['Deal']['quantity'];?>"/>
+            			</div>
+                  </li>
+						 <!--<<label class="desc">Nearest Location<em>*</em></label>
+							div class="inp_holder">
+								<select name="data[Member][location]" class="field text full required" >
+									<option value="">Select Location</option>
+                      <?php foreach ($options as $option){ ?>
+										<option value="<?php echo $option['Location']['id'];?>" <?php if($member['Member']['location'] == $option['Location']['id']) echo 'selected="selected"';?>>
+											<?php echo $option['Location']['name']; ?>
+									</option>
+						
+									<?php } ?>
+								</select>
+								
+							</div>-->
+						<li>
+						<label class="desc">Deal Location<em>*</em></label>
+						<div class="inp_holder1">
+								<!--<p>
+								<input class="all_location all_loactionx" type="checkbox" /><span>Select All</span>
+								</p>-->
+								
+                         <?php
+                           $location_checked='';
+									foreach ($nearest_location as $loc)
+									{
+									$multiple_loc=explode(',',$member['Deal']['location']);
+									
+                            if(in_array($loc['Location']['id'],$multiple_loc))
+                            {                            
+	                             $location_checked=1;
+									 }
+									?>
+									<p class="locationx_padding">
+									<input class="each_location each_loactionx" type="checkbox" name="data[Deal][location][]" value="<?php echo $loc['Location']['id']; ?>" <?php if(in_array($loc['Location']['id'],$multiple_loc)) echo 'checked="checked"';?> />
+									<span><?php echo $loc['Location']['name']; ?></span>
+									</p>
+								<?php
+								 } 
+								?>
+								
+							
+						</div>
+						  <input type="hidden" class="location_hidn required" value="<?php if($location_checked==1){echo '1';}?>" />
+						</li>
+				   	<li>
+                  	<label class="desc">Regular Selling Price:<em>*</em></label>
+							<div>
+						   	<input  class="field text full required number makeDiscount" name="data[Deal][selling_price]" type="text" value="<?php echo $member['Deal']['selling_price'];?>"/>
+							</div>
+                  </li>
+                    <li>
+                    <label class="desc">Discount option title 1:<em>*</em></label>
+                    	<div>
+                     	<input  class="field text full " value="<?php echo $member['DealOption'][0]['option_title'];?>" name="data2[0][DealOption][option_title]">
+                    </div>
+                   </li>  
+                  <li>
+                  	<label class="desc">% Discount:<em>*</em></label>
+                    	<div>
+                      <input type="hidden" value="<?php echo $member['DealOption'][0]['id'];?>" name="data2[0][DealOption][id]">
+                     	<input id="discount1" class="field text full required number makeDiscount"  maxlength="2" value="<?php echo $member['DealOption'][0]['discount'];?>" name="data2[0][DealOption][discount]">
+                   </div>
+                  </li>   
+				  	     	<li>
+                  	<label class="desc">Discounted Selling Price* <em>*</em></label>
+                    	<div>
+                     	<input id="discount_price1" readonly="readonly" maxlength="16" class="field text full required number" name="data2[0][DealOption][discount_selling_price]" type="text" value="<?php echo $member['DealOption'][0]['discount_selling_price'];?>"/>
+                    	</div>
+                  </li>
+                <h3>Deal Discount Option</h3>
+                 <div>
+                   <li>
+                    <label class="desc">Discount option title 2:<em>*</em></label>
+                    	<div>
+                     	<input  class="field text full" value="<?php echo $member['DealOption'][1]['option_title'];?>" name="data2[1][DealOption][option_title]">
+                     	
+                     </div>
+                   </li>  
+                   <li>
+                    <label class="desc">% Discount 1:<em>*</em></label>
+                    	<div>
+                       <input type="hidden" value="<?php echo $member['DealOption'][1]['id'];?>" name="data2[1][DealOption][id]">
+                     	<input id="discount2"  class="field text full number makeDiscount1" value="<?php echo $member['DealOption'][1]['discount'];?>" name="data2[1][DealOption][discount]">
+                     </div>
+                   </li>   
+				  	     	<li>
+                  	<label class="desc">Discounted Selling Price 1* <em>*</em></label>
+                    	<div>
+                     	<input id="discount_price2" maxlength="16" class="field text full number" name="data2[1][DealOption][discount_selling_price]" type="text" value="<?php echo $member['DealOption'][1]['discount_selling_price'];?>"/>
+                    	</div>
+                  </li>
+                  <li>
+                    <label class="desc">Discount option title 3:<em>*</em></label>
+                    	<div>
+                     	<input  class="field text full " value="<?php echo @$member['DealOption'][2]['option_title'];?>" name="data2[2][DealOption][option_title]">
+                     </div>
+                   </li>   
+                   <li>
+                     <label class="desc">% Discount 2:<em>*</em></label>
+                    	<div>
+                      <input type="hidden" value="<?php echo $member['DealOption'][2]['id'];?>" name="data2[2][DealOption][id]">
+                     	<input id="discount3"  class="field text full number makeDiscount2" value="<?php echo @$member['DealOption'][2]['discount'];?>" name="data2[2][DealOption][discount]">
+                     </div>
+                   </li>   
+				  	     	     <li>
+                  	<label class="desc">Discounted Selling Price 2* <em>*</em></label>
+                    	<div>
+                     	<input id="discount_price3" maxlength="16" class="field text full number" name="data2[2][DealOption][discount_selling_price]" type="text" value="<?php echo @$member['DealOption'][2]['discount_selling_price'];?>"/>
+                    	</div>
+              </li>
+              </div>
+                    <li>
+                    <label class="desc">Description:<em>*</em></label>
+                    <div>
+                    		<textarea  class="field text full required" name="data[Deal][description]"><?php echo $member['Deal']['description'];?></textarea>
+                    </div>
+                  </li>
+                  <li>
+                  	 <label class="desc">Fine Print:<em>*</em></label>
+                     <div>
+                     	  <textarea  class="field text full required" name="data[Deal][highlights]"><?php echo $member['Deal']['highlights'];?></textarea>
+                     </div>
+                  </li>                  
+					</ul>
+				</div> <!-- end of content box wrapper -->
+			</div>
+		</div>  
+      <li>
+      	<input class="submit sub-bttn" type="submit" value="Submit"/>
+      </li>
+	</fieldset>
+</form>        
+<div class="clearfix"></div>
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+</div>
+</div>
+<div class="clear"></div>
+<script type="text/javascript" >
+$(document).ready(function(){
+   $('.each_location').click(function()
+	{
+		$('.each_location').each(function(index){
+			if($(this).is(':checked'))
+			{
+				$('.location_hidn').val(1);
+				return false;
+			}
+			else
+			{
+				$('.location_hidn').val('');
+			}
+			
+		});
+	});
+})
+
+</script>
+

@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/repos/cybercoupon/!svn/ver/1813/app/View/Orders
+END
+proceed_checkout.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1813/app/View/Orders/proceed_checkout.ctp
+END
+admin_deleted_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repos/cybercoupon/!svn/ver/1627/app/View/Orders/admin_deleted_order.ctp
+END
+admin_view_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1618/app/View/Orders/admin_view_order.ctp
+END
+place_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/repos/cybercoupon/!svn/ver/152/app/View/Orders/place_order.ctp
+END
+my_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/cybercoupon/!svn/ver/138/app/View/Orders/my_order.ctp
+END
+payment_failed.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repos/cybercoupon/!svn/ver/632/app/View/Orders/payment_failed.ctp
+END
+payment_cancel.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1699/app/View/Orders/payment_cancel.ctp
+END
+admin_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/cybercoupon/!svn/ver/1809/app/View/Orders/admin_order.ctp
+END
+cart.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/repos/cybercoupon/!svn/ver/471/app/View/Orders/cart.ctp
+END
+order_detail.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/cybercoupon/!svn/ver/138/app/View/Orders/order_detail.ctp
+END
+buy_again.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/repos/cybercoupon/!svn/ver/1799/app/View/Orders/buy_again.ctp
+END
+track_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/repos/cybercoupon/!svn/ver/138/app/View/Orders/track_order.ctp
+END
+admin_view_prod_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/cybercoupon/!svn/ver/138/app/View/Orders/admin_view_prod_order.ctp
+END
+giftcart.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/repos/cybercoupon/!svn/ver/1136/app/View/Orders/giftcart.ctp
+END
+payment_success.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repos/cybercoupon/!svn/ver/1699/app/View/Orders/payment_success.ctp
+END

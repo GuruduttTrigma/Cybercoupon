@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1691/app/View/Elements/backend/Business
+END
+business_category_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/cybercoupon/!svn/ver/1409/app/View/Elements/backend/Business/business_category_list.ctp
+END
+reconcile_deal_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cybercoupon/!svn/ver/1531/app/View/Elements/backend/Business/reconcile_deal_list.ctp
+END
+reconcile_deal.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/cybercoupon/!svn/ver/1409/app/View/Elements/backend/Business/reconcile_deal.ctp
+END
+view_payment_history.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cybercoupon/!svn/ver/1531/app/View/Elements/backend/Business/view_payment_history.ctp
+END
+payment_history_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/cybercoupon/!svn/ver/1691/app/View/Elements/backend/Business/payment_history_list.ctp
+END
+business_types_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/cybercoupon/!svn/ver/1409/app/View/Elements/backend/Business/business_types_list.ctp
+END
+payment_deal_list.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/cybercoupon/!svn/ver/1462/app/View/Elements/backend/Business/payment_deal_list.ctp
+END

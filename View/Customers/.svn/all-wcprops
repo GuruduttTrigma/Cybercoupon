@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/repos/cybercoupon/!svn/ver/1815/app/View/Customers
+END
+register.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/cybercoupon/!svn/ver/1558/app/View/Customers/register.ctp
+END
+success_direct_verification.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cybercoupon/!svn/ver/1530/app/View/Customers/success_direct_verification.ctp
+END
+view_order.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repos/cybercoupon/!svn/ver/1811/app/View/Customers/view_order.ctp
+END
+login.ctp~
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/repos/cybercoupon/!svn/ver/1726/app/View/Customers/login.ctp~
+END
+success.ctp~
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/cybercoupon/!svn/ver/1660/app/View/Customers/success.ctp~
+END
+forgot_success.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/985/app/View/Customers/forgot_success.ctp
+END
+login.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/repos/cybercoupon/!svn/ver/1815/app/View/Customers/login.ctp
+END
+success.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/repos/cybercoupon/!svn/ver/1599/app/View/Customers/success.ctp
+END
+view_profile.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repos/cybercoupon/!svn/ver/1758/app/View/Customers/view_profile.ctp
+END
+forgot_password.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/cybercoupon/!svn/ver/709/app/View/Customers/forgot_password.ctp
+END
+registration_success.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/cybercoupon/!svn/ver/941/app/View/Customers/registration_success.ctp
+END

@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/repos/cybercoupon/!svn/ver/1726/app/View/Layouts
+END
+admin.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/repos/cybercoupon/!svn/ver/1225/app/View/Layouts/admin.ctp
+END
+email.thtml 
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/cybercoupon/!svn/ver/1570/app/View/Layouts/email.thtml%20
+END
+error.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/repos/cybercoupon/!svn/ver/638/app/View/Layouts/error.ctp
+END
+flash.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/repos/cybercoupon/!svn/ver/638/app/View/Layouts/flash.ctp
+END
+public.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/cybercoupon/!svn/ver/1726/app/View/Layouts/public.ctp
+END
+ajax.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/repos/cybercoupon/!svn/ver/1/app/View/Layouts/ajax.ctp
+END
+default.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/cybercoupon/!svn/ver/638/app/View/Layouts/default.ctp
+END

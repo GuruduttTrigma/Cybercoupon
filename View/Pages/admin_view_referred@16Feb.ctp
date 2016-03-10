@@ -1,0 +1,76 @@
+<div id="page-layout">
+	<div id="page-content">
+		<div id="page-content-wrapper">
+			<div class="inner-page-title">
+				<h2>Referral customers list</h2>
+				<?php				
+					$memberid = base64_encode(convert_uuencode($referral_idz));
+				?>
+				<a style="margin-top:-10px; margin-right:10px;" class="ui-state-default ui-corner-all float-right ui-button" href="<?php echo HTTP_ROOT.'admin/Pages/referrals';?>">Back</a>
+				<?php if($subadmin_type==1 || @$modulepermissions['Referrals']['module_edit']==1 )  { ?> 
+				<a title="Add Referral" class="ui-state-default ui-corner-all float-right ui-button" href="<?php echo HTTP_ROOT.'admin/Pages/addReferred/'.$memberid; ?>" style="margin-top:-10px;" >Click Here to Re-Link </a>
+				<?php } ?>				
+				<span></span>
+			</div>
+			<?php if($this->Session->check('success')){ ?>
+				<div class="response-msg success ui-corner-all">
+					<span>Success message</span>
+					<?php echo $this->Session->read('success');?>
+				</div>
+				<?php unset($_SESSION['success']); ?>
+			   <?php } ?>	
+         <div class="content-box content-box-header search_list" style="border:none;">
+            
+            
+			  <div id="page-content">
+				<div id="page-content-wrapper" style="padding:0; margin:0; background:0; box-shadow:0 0 0 0 #fff;">
+					<div class="hastable">
+			         
+						<table id="sort-table"> 
+							<thead> 
+								<tr>
+			                  <th style="width:auto;">First Name</th>
+			                  <th style="width:auto;">Surname</th>
+			                  <th style="width:auto;">Email</th> 
+			                  <?php if($subadmin_type==1 || @$modulepermissions['Referrals']['module_edit']==1 )  { ?> 
+			                  <th style="width:auto;">Action</th> 
+			                  <?php } ?>
+								</tr> 
+							</thead> 
+							<tbody>
+							<?php
+							foreach($referres as $referred)
+							{
+							$newsid = base64_encode(convert_uuencode($referred['Referral']['id']));
+							?>
+			                <tr>
+			                   <td><?php echo $referred['Referred']['name']; ?></td>
+			                   <td><?php echo $referred['Referred']['surname'];?></td>
+			                   <td><?php echo $referred['Referred']['email']; ?></td>
+			                   <?php if($subadmin_type==1 || @$modulepermissions['Referrals']['module_edit']==1 )  { ?> 
+			                   <td><a title="Unlink" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Pages/deleteReferred/".$newsid; ?>" onclick="return confirm('Are you sure you want to unlink this customer?');">
+									<span class="ui-icon ui-icon-circle-close"></span>
+									</a>
+									</td>
+									<?php } ?>
+								 </tr>
+							<?php
+							}
+							?> 
+							</tbody>
+						</table>
+						
+					</div>
+				</div>
+				</div>            
+            
+            
+            
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="clear"></div>
+

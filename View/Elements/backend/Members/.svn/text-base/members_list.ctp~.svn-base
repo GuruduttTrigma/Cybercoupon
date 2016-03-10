@@ -1,0 +1,754 @@
+<script id="js">
+$(function()
+{
+	var pagerOptions = {
+		container: $(".pager"),
+		ajaxUrl: null,
+		ajaxProcessing: function(ajax){
+			if (ajax && ajax.hasOwnProperty('data')) {
+				return [ ajax.data, ajax.total_rows ];
+			}
+		},
+		updateArrows: true,
+		page: 0,
+		size: 10,
+
+		removeRows: false,
+
+		cssNext: '.next', // next page arrow
+		cssPrev: '.prev', // previous page arrow
+		cssFirst: '.first', // go to first page arrow
+		cssLast: '.last', // go to last page arrow
+		cssGoto: '.gotoPage', // select dropdown to allow choosing a page
+
+		cssPageDisplay: '.pagedisplay', // location of where the "output" is displayed
+		cssPageSize: '.pagesize', 
+		cssDisabled: 'disabled' 
+	};
+
+	$("table")
+		.tablesorter({
+			theme: 'blue',
+			widgets: ['zebra']
+		})
+		.bind('pagerChange pagerComplete pagerInitialized pageMoved', function(e, c){
+			var msg = '" event triggered, ' + (e.type === 'pagerChange' ? 'going to' : 'now on') +
+				' page ' + (c.page + 1) + '/' + c.totalPages;
+			$('#display')
+				.append('<li>"' + e.type + msg + '</li>')
+				.find('li:first').remove();
+		})
+		.tablesorterPager(pagerOptions);
+		$('button:contains(Add)').click(function(){
+			// add two rows
+			var row = '<tr><td>StudentXX</td><td>Mathematics</td><td>male</td><td>33</td><td>39</td><td>54</td><td>73</td><td><button class="remove" title="Remove this row">X</button></td></tr>' +
+				'<tr><td>StudentYY</td><td>Mathematics</td><td>female</td><td>83</td><td>89</td><td>84</td><td>83</td><td><button class="remove" title="Remove this row">X</button></td></tr>',
+				$row = $(row);
+			$('table')
+				.find('tbody').append($row)
+				.trigger('addRows', [$row]);
+		});
+
+		$('table').delegate('button.remove', 'click' ,function(){
+			var t = $('table');
+			$(this).closest('tr').remove();
+			t.trigger('update');
+		});
+
+		$('button:contains(Destroy)').click(function(){
+			var $t = $(this);
+			if (/Destroy/.test( $t.text() )){
+				$('table').trigger('destroy.pager');
+				$t.text('Restore Pager');
+			} else {
+				$('table').tablesorterPager(pagerOptions);
+				$t.text('Destroy Pager');
+			}
+		});
+
+		$('.toggle').click(function(){
+			var mode = /Disable/.test( $(this).text() );
+			$('table').trigger( (mode ? 'disable' : 'enable') + '.pager');
+			$(this).text( (mode ? 'Enable' : 'Disable') + 'Pager');
+		});
+		$('table').bind('pagerChange', function(){
+			// pager automatically enables when table is sorted.
+			$('.toggle').text('Disable Pager');
+		});
+$(".tablesorter-header").append('<span class="ui-icon ui-icon-carat-2-n-s"></span>');
+$(".rmv_sort").children("span").removeClass('ui-icon');
+$(".rmv_sort").children("span").css("margin-top",'12px');
+});
+
+</script>
+<script type="text/javascript" >
+$(document).ready(function(){
+	$('.send_otp').live('click',function(){
+	var ids = $(this).data('id');
+	var mailId = $(this).attr('rel');
+     $.ajax({
+     type: 'post',
+     url: ajax_url+'Members/send_otp',
+     data:{email :mailId,id:ids},
+     success: function(msz){
+         if(msz == 'done')
+          {
+           /*$('.send_otp').remove();
+           $('.change_st').text('');
+           $('.change_st').text('Active');
+           $('.send_success').css('display','block');*/
+           window.location=ajax_url+'admin/Members/members/ISxQYGAKYAo=';
+           }
+           
+        }
+     })
+     setTimeout(function(){
+      $('.send_success').css('display','none');
+     },7000);
+  })
+  
+  $('.bulk_user_email').click(function() {
+      
+      var member_type=$('#member_type').val();
+      var total_checked=$("input:checked").not('.all_user').length;
+      if(total_checked>0)
+      {
+         $(".image_display").show();
+		   $(".image_display").children('img').attr('src',ajax_url+'img/backend/loader.gif');
+	      $.ajax({
+	         type:'POST',
+	         url:ajax_url+'admin/Members/bulk_usermail',
+	         data:$('#usr_form').serialize(),
+	         success:function(resp){
+	                   $('.image_display').css('display','none');
+	                   window.location=ajax_url+'admin/Members/members/'+member_type;
+	                }
+	      
+	        })
+        }
+        else
+        {
+           alert('Please select atleast one user.')
+        }
+  
+  }) 
+  $('.bulk_user_active').click(function(){
+      
+      var member_type=$('#member_type').val();
+      var total_checked=$("input:checked").not('.all_user').length;
+      if(total_checked>0)
+      {
+         $(".image_display_make_active").show();
+		   $(".image_display_make_active").children('img').attr('src',ajax_url+'img/backend/loader.gif');
+	      $.ajax({
+	         type:'POST',
+	         url:ajax_url+'admin/Members/bulk_useractive',
+	         data:$('#usr_form').serialize(),
+	         success:function(resp){
+	                   $('.image_display_make_active').css('display','none');
+	                   window.location=ajax_url+'admin/Members/members/'+member_type;
+	                }
+	      
+	        })
+        }
+        else
+        {
+           alert('Please select atleast one user.')
+        }
+  
+  })   
+  
+  
+})
+</script>
+<script type="text/javascript" >
+$(document).ready(function(){
+	$('.first_step_approval').live('click',function(){
+		var ids = $(this).data('id');
+		var mailId = $(this).attr('rel');
+     $.ajax({
+     type: 'post',
+     url: ajax_url+'Members/admin_sendpdf',
+     data:{email :mailId,id:ids},
+     success: function(msz){
+         if(msz == 'done')
+          {
+           /*$('.send_otp').remove();
+           $('.change_st').text('');
+           $('.change_st').text('Active');
+           $('.send_success').css('display','block');*/
+           window.location=ajax_url+'admin/Members/members/ISxQYGAKYAo=';
+           }
+           
+        }
+     })
+     setTimeout(function(){
+      $('.send_success').css('display','none');
+     },7000);
+  });
+  
+  $('.all_user').click(function(){
+      if($(this).is(':checked'))
+      {
+         $('.each_user').attr('checked',true);
+      }
+      else
+      {
+         $('.each_user').attr('checked',false);
+      }
+  })
+  $('.each_user').click(function() {
+      
+      var total_checkbox=$('input[type=checkbox]').not('.all_user').length;
+      var total_checked=$("input:checked").not('.all_user').length;
+	 
+      if(total_checked<total_checkbox)
+      {
+          $('.all_user').attr('checked',false);
+      }
+      if(total_checked==total_checkbox)
+      {
+          $('.all_user').attr('checked',true);
+      }
+     
+  });
+  /*$('.pagesize').change(function(){
+  
+      var total_checkbox=$('input[type=checkbox]:visible').not('.all_user').length;
+      var total_checked=$("input:checked").not('.all_user').length;
+      if(total_checked<total_checkbox)
+      {
+          $('.all_user').attr('checked',false);
+          $('.each_user:visible').attr('checked',true);
+      }
+      if(total_checked==total_checkbox)
+      {
+          $('.all_user').attr('checked',true);
+          $('.each_user:visible').attr('checked',true);
+      }
+  
+ 
+      
+  
+  })*/
+  
+});
+</script>
+
+
+<?php
+	//echo $member_type;die;
+    if($member_type=='2')
+    {
+        $selected_module_name = 'User' ;
+    }
+    else if($member_type=='3')
+    {
+        $selected_module_name = 'Supplier' ;
+    }
+    else if($member_type=='4')
+    {
+        $selected_module_name = 'Customer' ;
+    }    
+?>
+<div id="page-content">
+	<div id="page-content-wrapper" style="padding:0; margin:0; background:0; box-shadow:0 0 0 0 #fff;">
+		<b style="font-size:20px;"><?php echo count($member)." ".$selected_module_name."s"; ?></b>		
+		<div class="hastable">
+			<form id="usr_form" method="post" action="" >
+			<table id="sort-table"> 
+				<thead> 
+					<tr>
+					    <th style="width:auto;" class="rmv_sort"><input type="checkbox" class="all_user" style="float:left;"/>All</th>
+						<?php	if($member_type != '3') {	?>
+                        <th style="width:auto;">First Name</th>
+                        <th style="width:auto;">Surname</th>
+						<?php	}	?>
+                        <?php	if($member_type=='3')	{	?>
+                        <th style="width:auto;">Business Name</th>
+                        <?php	}	?>
+                        <th style="width:auto;">Email</th>
+                        <th style="width:auto;">Member Type</th>
+                        <?php	if($member_type=='3') { ?>  
+                        <th style="width:auto;">City</th>
+                        <?php	}	if($member_type=='4') { ?>  
+                        <th style="width:auto;">Location</th>
+                        <?php	}	?>  
+                        <th style="width:auto;">Register Date</th>
+                        <th style="width:auto;">Status</th>
+						<?php
+						if($subadmin_type==1 || @$modulepermissions['Members']['module_edit']==1)
+						{
+						?>
+						<th style="width:280px;" class="rmv_sort">Action</th> 
+						<?php 
+						}
+						?>
+					</tr> 
+				</thead> 
+				<tbody class="tbody_tr"> 
+				<?php	
+				if(!empty($member))	
+				{	?>				
+					<input type="hidden" id="member_type" name="data[User][member_type]" value="<?php echo base64_encode(convert_uuencode($member_type));?>" >
+					<?php
+					foreach($member as $data)
+					{	?>
+					<tr>
+						<td><input type="checkbox" name="data[User][user_id][]" value="<?php echo $data['Member']['id']; ?>" class="each_user"/></td>
+						<?php 
+						if($member_type!='3') 
+						{ 
+						?>
+                    	<td><?php echo $data['Member']['name']?></td>
+                    	<td><?php echo $data['Member']['surname']?></td>
+						<?php 
+						}
+						?>
+							<?php if($member_type=='3') { ?>                    
+                    	<td><?php echo $data['MemberMeta']['company_name']?></td>
+						<?php } ?>  
+                        <td><?php echo $data['Member']['email']; ?></td>
+                        <td>
+                        <?php 
+                        if($member_type=='2')
+                        {
+                        	if($data['Member']['company_user_type'] == 'sales_person') :
+                        		echo 'Sales Person'; 
+                        	else : 
+                        		echo 'Company User'; 
+                        	endif;
+                        }
+                        if($member_type=='3')
+                        {                        	
+                        echo "Supplier";	
+                        }
+                        if($member_type=='4')
+                        {                        	
+                        echo "Customer";	
+                        }
+                        ?>
+                        </td>
+                        <?php if($member_type=='3') { ?>  
+                        <td><?php echo $data['Member']['city']; ?></td>
+                        <?php 
+                         }
+                         if($member_type=='4') { ?> 
+                        <td><?php echo $data['Location']['name']; ?></td> 
+                        <?php } ?>
+                        <td><?php echo date('d F Y',strtotime($data['Member']['registered'])); ?></td>
+						
+						<?php 
+						if($member_type=='3' && $data['Member']['status']=="Inactive" && $data['Member']['first_step_approval'] == "Yes" && $data['Member']['second_step_approval'] == "Yes" ) 
+						{ 
+						?>  
+                        <td>
+						<?php 
+							echo "Suspended"; 
+							
+						?>
+						</td>
+						<?php 
+						}
+						elseif(
+						($member_type=='3' || $member_type=='2') && $data['Member']['status']=="Inactive"
+						&&
+						($data['Member']['first_step_approval']=="No" || $data['Member']['second_step_approval'] == "No") 
+						)
+						{
+						?>
+						<td>
+						<?php 
+							echo "Pending"; 
+							
+						?>
+						</td>
+						<?php 
+						}
+						elseif(
+						$member_type=='4' && $data['Member']['status']=="Inactive"
+						&&
+						$data['Member']['first_step_approval']=="Yes" 
+						&&
+						$data['Member']['second_step_approval']=="Yes" 
+						) 
+						{
+						?>
+						<td>
+						<?php 
+							echo "Suspended"; 							
+						?>
+						</td>
+						<?php 
+						}
+						elseif(
+						$member_type=='4' 
+						&& 
+						$data['Member']['status']=="Active"
+						&&
+						$data['Member']['first_step_approval']=="Yes" 
+						&& 
+						$data['Member']['second_step_approval']=="Yes" 
+						) 
+						{
+						?>
+						<td>
+						<?php 
+							echo "Unsuspended"; 							
+						?>
+						</td>
+						<?php 
+						}
+						elseif(
+						$member_type=='2' && $data['Member']['status']=="Inactive"
+						&&
+						$data['Member']['first_step_approval']=="Yes" 
+						&&
+						$data['Member']['second_step_approval']=="Yes" 
+						) 
+						{
+						?>
+						<td>
+						<?php 
+							echo "Suspended"; 							
+						?>
+						</td>
+						<?php 
+						}
+						elseif(
+						$member_type=='2' 
+						&& 
+						$data['Member']['status']=="Active"
+						&&
+						$data['Member']['first_step_approval']=="Yes" 
+						&& 
+						$data['Member']['second_step_approval']=="Yes" 
+						) 
+						{
+						?>
+						<td>
+						<?php 
+							echo "Unsuspended"; 							
+						?>
+						</td>
+						<?php 
+						}
+						else
+						{
+						?>
+						<td><?php echo $data['Member']['status']; ?></td>
+						<?php
+						}
+						if($subadmin_type==1 || @$modulepermissions['Members']['module_edit']==1)
+						{
+						?>
+                        <td>
+						<?php 
+						if($member_type=='3' )
+						{
+							//pr($data);
+							 
+							$newsid = base64_encode(convert_uuencode($data['Member']['id']));
+							if($data['Member']['first_step_approval']=='No')
+							{
+							?>
+								<a title="1st Step Approval Pending from <?php echo date('d F Y',strtotime($data['Member']['registered'])); ?>" style="border-color:green;border-width:3px; " class="btn_no_text btn ui-state-default ui-corner-all tooltip " href="<?php echo HTTP_ROOT."admin/Members/sendpdf/".$newsid; ?>">	
+									<span class="ui-icon ui-icon-search"></span>
+								</a>
+								<?php
+							}
+							else
+							{
+								$admin_name1 = $data['ApprovalSupplier1']['name'].' '.$data['ApprovalSupplier1']['surname'];
+							?>
+							<a title="1st Step Approval Completed <?php if($admin_name1 != '' || $admin_name1 != Null) { echo 'by'.' '.$admin_name1.' '."on".' '.date('d F Y',strtotime($data['Member']['date_approve_first_step_approval'])); } ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="javascript:void(0);">	
+								<span class="ui-icon ui-icon-search"></span>
+							</a>
+							<?php
+							}
+							if(empty($data['Member']['password']))
+							{
+								if($data['Member']['first_step_approval'] == 'Yes')
+								{
+							?>
+								<a title="2nd Step Approval Pending from <?php echo date('d F Y',strtotime($data['Member']['registered'])); ?>" style="border-color:green;border-width:3px; " class="btn_no_text btn ui-state-default ui-corner-all tooltip send_otp" data-id="<?php echo $data['Member']['id']; ?>" rel="<?php echo $data['Member']['email']; ?>" href="javascript:void(0);">	
+									<span class="ui-icon ui-icon-search"></span>
+								</a>
+							<?php
+								}
+								else
+								{
+							?>
+								<a title="2nd Step Approval Pending from <?php echo date('d F Y',strtotime($data['Member']['registered'])); ?>" style="border-color:green;border-width:3px; " class="btn_no_text btn ui-state-default ui-corner-all tooltip"  href="javascript:void(0);">	
+									<span class="ui-icon ui-icon-search"></span>
+								</a>
+							<?php
+								}
+							}
+							else
+							{
+								$admin_name2 = @$data['ApprovalSupplier2']['name'].' '.@$data['ApprovalSupplier2']['surname'];
+							?>
+								<a title="2nd Step Approval Completed by <?php echo @$admin_name2.' '."on".' '.date('d F Y',strtotime($data['Member']['date_approve_second_step_approval'])); ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="javascript:void(0);">	
+									<span class="ui-icon ui-icon-search"></span>
+								</a>
+							<?php
+							} 	
+							?>  
+							<a title="Edit" href="<?php echo HTTP_ROOT."admin/Members/edit_member/".$newsid; ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip">
+								<span class="ui-icon ui-icon-pencil"></span>
+							</a>							        
+							<?php
+							if($data['Member']['status']=="Active")
+							{
+							?>
+								<a title="Suspended" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+									<span class="ui-icon ui-icon-lightbulb"></span>
+								</a>
+							<?php
+							}
+							elseif($data['Member']['status']=="Inactive" && $data['Member']['first_step_approval'] == "Yes" && $data['Member']['second_step_approval'] == "Yes")
+							{
+							?>
+								<a title="Unsuspended" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+									<span class="ui-icon ui-icon-lightbulb"></span>
+								</a>
+							<?php
+							}
+							elseif($data['Member']['status']=="Inactive" && ($data['Member']['first_step_approval'] == "No" || $data['Member']['second_step_approval'] == "No"))
+							{
+							?>
+							<a title="Approved" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="javascript:void(0);">
+								<span class="ui-icon ui-icon-lightbulb"></span>
+							</a>
+							<?php
+							}
+							else
+							{
+							?>
+							<a title="Approved" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+								<span class="ui-icon ui-icon-lightbulb"></span>
+							</a>
+							<?php
+							}			
+							if($data['Member']['member_type']=='3' or $data['Member']['member_type']=='4')
+							{
+							?>
+								<a title="Email" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/email_member/".$newsid; ?>">	
+									<span class="ui-icon ui-icon-mail-open"></span>
+								</a>
+							<?php
+							}
+							if($data['Member']['member_type']=='3' or $data['Member']['member_type']=='4')
+							{
+							?>
+								<a title="Resend Password" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/send_password/".$newsid; ?>">	
+									<span class="ui-icon ui-icon-mail-open"></span>
+								</a>
+							<?php
+							}
+							?>     
+							<a title="Delete" class="delRec btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/deleteMember/".$newsid; ?>" onclick="return confirm('Are you sure you want to delete this Member?');">
+								<span class="ui-icon ui-icon-circle-close"></span>
+							</a>
+							<a title="Payment History" class="btn_no_text btn ui-state-default ui-corner-all tooltip" target="_blank" href="<?php echo HTTP_ROOT.'admin/Business/payment_history/'.$newsid; ?>" >
+								<span class="ui-icon ui-icon-bookmark"></span>
+							</a>
+							<?php
+										
+                          
+							}		 // end of member_type3 action edit functionality.
+						   // end of member_type3 action.
+						else
+						{
+							
+							
+								$newsid = base64_encode(convert_uuencode($data['Member']['id']));
+							?>
+								<a title="View" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/view_member/".$newsid; ?>">	
+									<span class="ui-icon ui-icon-search"></span>
+								</a>
+								<a title="Edit" href="<?php echo HTTP_ROOT."admin/Members/edit_member/".$newsid; ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip">
+									<span class="ui-icon ui-icon-pencil"></span>
+								</a>
+								<a title="Delete" class="delRec btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/deleteMember/".$newsid; ?>" onclick="return confirm('Are you sure you want to delete this Member?');">
+									<span class="ui-icon ui-icon-circle-close"></span>
+								</a>
+								<?php
+								if($data['Member']['status']=="Active")
+								{
+									if(
+										$member_type=='4' && $data['Member']['status']=="Active"
+										&&
+										$data['Member']['first_step_approval']=="Yes" 
+										&&
+										!empty($data['Member']['member_approve_first_step_approval'])
+									) 
+									{
+										$admin_name1 = $data['ApprovalSupplier1']['name'].' '.$data['ApprovalSupplier1']['surname'];
+								?>
+										<a title="<?php echo "Unsuspended By ".$admin_name1.' On '.date('d F Y',strtotime($data['Member']['date_approve_first_step_approval'])); ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+											<span class="ui-icon ui-icon-lightbulb"></span>
+										</a>
+								<?php
+									}
+									if(
+										$member_type=='2' && $data['Member']['status']=="Active"
+										&&
+										$data['Member']['first_step_approval']=="Yes" 
+										&&
+										!empty($data['Member']['member_approve_first_step_approval'])
+									) 
+									{
+										$admin_name1 = $data['ApprovalSupplier1']['name'].' '.$data['ApprovalSupplier1']['surname'];
+								?>
+										<a title="<?php echo "Unsuspended By ".$admin_name1.' On '.date('d F Y',strtotime($data['Member']['date_approve_first_step_approval'])); ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+											<span class="ui-icon ui-icon-lightbulb"></span>
+										</a>
+								<?php
+									}
+									elseif(
+										$member_type=='4' && $data['Member']['status']=="Active"
+										&&
+										$data['Member']['first_step_approval']=="Yes" 
+										&&
+										empty($data['Member']['member_approve_first_step_approval'])
+									) 
+									{
+										$admin_name1 = $data['ApprovalSupplier1']['name'].' '.$data['ApprovalSupplier1']['surname'];
+								?>
+									<a title="Suspended " class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+									<?php
+									}
+									elseif(
+										$member_type=='2' && $data['Member']['status']=="Active"
+										&&
+										$data['Member']['first_step_approval']=="Yes" 
+										&&
+										empty($data['Member']['member_approve_first_step_approval'])
+									) 
+									{
+										$admin_name1 = @$data['ApprovalSupplier1']['name'].' '.@$data['ApprovalSupplier1']['surname'];
+								?>
+									<a title="Suspended " class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+									<?php
+									}
+									else
+									{
+									?>
+									<a title="Declined" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+									<?php
+									}
+								}								
+								else
+								{
+									if(
+										$member_type=='4' && $data['Member']['status']=="Inactive"
+										&&
+										$data['Member']['first_step_approval']=="Yes" 
+									) 
+									{
+									$admin_name2 = $data['ApprovalSupplier2']['name'].' '.$data['ApprovalSupplier2']['surname'];
+
+								?>
+									<a title="<?php echo "Suspended By ".$admin_name2.' On '.date('d F Y',strtotime($data['Member']['date_approve_second_step_approval']));  ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+								
+								<?php 
+									}
+									elseif(
+										$member_type=='2' && $data['Member']['status']=="Inactive"
+										&&
+										$data['Member']['first_step_approval']=="Yes" 
+									) 
+									{
+									$admin_name2 = @$data['ApprovalSupplier2']['name'].' '.@$data['ApprovalSupplier2']['surname'];
+
+								?>
+									<a title="<?php echo "Suspended By ".$admin_name2.' On '.date('d F Y',strtotime($data['Member']['date_approve_second_step_approval']));  ?>" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+								
+								<?php 
+									}
+									else
+									{
+								?>
+									<a title="Approved" class="btn_no_text btn ui-state-default ui-corner-all tooltip ui-state-hover" href="<?php echo HTTP_ROOT."admin/Members/statusMember/".$newsid; ?>">
+										<span class="ui-icon ui-icon-lightbulb"></span>
+									</a>
+								<?php
+									}
+								}
+								if($data['Member']['member_type']=='4')
+								{
+								?>
+									<a title="Email" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT.'admin/Members/email_member/'.$newsid; ?>">	
+										<span class="ui-icon ui-icon-mail-open"></span>
+									</a>
+								<?php
+								}
+								if($data['Member']['member_type']=='4')
+								{
+									?>
+									<a title="Resend Activation Link" class="btn_no_text btn ui-state-default ui-corner-all tooltip" href="<?php echo HTTP_ROOT.'admin/Members/resend_customer_activation/'.$newsid; ?>">	
+										<span class="ui-icon ui-icon-mail-closed"></span>
+									</a>
+								<?php
+								}
+							
+                
+						} 
+						}//END ABOVE THE edit permission of if condition on else condition
+                        
+                  	} // end of else condition.
+                  	?>
+					</td>
+                </tr>
+				<?php
+                } // end of foreach 
+                // end of not empty section.
+				else
+				{
+					?>
+					<tr>
+						<td colspan="7">No Records Found.</td>
+					</tr>
+					<?php		
+				}
+				?>					
+				</tbody>
+			</table>
+			</form>
+			<?php
+			if($subadmin_type==1||@$modulepermissions['Members']['module_edit']==1) 
+			{ 		  
+			?> 
+			<div class="" style="float:left; width:100%; margin-top:8px;">
+				
+				<input type="button" style="width: auto; margin-top: 2px;margin-left:0;" value="Send Email" class="sub-bttn bulk_user_email">
+				<div style="display:none;left: 8%;position: absolute; " class="image_display">
+					<img style="margin-left:0px;margin-top: 13px;width: 56%; " src="http://localhost/cybercoupon/img/backend/loader.gif">
+				</div>
+				<input type="button" style="width: auto; margin-top: 2px;margin-left:50px;" value="Make Active" class="sub-bttn bulk_user_active">
+				<div style="display:none;left: 18%;position: absolute; " class="image_display_make_active">
+					<img style="margin-left:0px;margin-top: 13px;width: 56%; " src="http://localhost/cybercoupon/img/backend/loader.gif">
+				</div>
+			</div>
+			<?php
+			}
+			 echo $this->element('backend/table_head100');
+		  ?>
+			
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+</div>

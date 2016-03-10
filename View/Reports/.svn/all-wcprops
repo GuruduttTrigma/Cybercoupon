@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/repos/cybercoupon/!svn/ver/1660/app/View/Reports
+END
+admin_customer_payment_report.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/cybercoupon/!svn/ver/1531/app/View/Reports/admin_customer_payment_report.ctp
+END
+admin_view_customer_paymentdetail.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/cybercoupon/!svn/ver/1513/app/View/Reports/admin_view_customer_paymentdetail.ctp
+END
+email.zip
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/repos/cybercoupon/!svn/ver/1660/app/View/Reports/email.zip
+END
+admin_reports.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1563/app/View/Reports/admin_reports.ctp
+END
+admin_view_pay_history.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cybercoupon/!svn/ver/1594/app/View/Reports/admin_view_pay_history.ctp
+END

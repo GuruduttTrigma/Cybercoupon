@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/repos/cybercoupon/!svn/ver/1785/app/View/Members
+END
+admin_email_member.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repos/cybercoupon/!svn/ver/1233/app/View/Members/admin_email_member.ctp
+END
+admin_uploaded_users.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/cybercoupon/!svn/ver/1731/app/View/Members/admin_uploaded_users.ctp
+END
+admin_add_member.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/cybercoupon/!svn/ver/1623/app/View/Members/admin_add_member.ctp
+END
+admin_sales_members.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/cybercoupon/!svn/ver/1699/app/View/Members/admin_sales_members.ctp
+END
+admin_view_member.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/cybercoupon/!svn/ver/1699/app/View/Members/admin_view_member.ctp
+END
+admin_sendpdf.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1065/app/View/Members/admin_sendpdf.ctp
+END
+admin_customers.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/cybercoupon/!svn/ver/1743/app/View/Members/admin_customers.ctp
+END
+admin_edit_customer.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repos/cybercoupon/!svn/ver/1744/app/View/Members/admin_edit_customer.ctp
+END
+admin_upload_customers.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repos/cybercoupon/!svn/ver/1700/app/View/Members/admin_upload_customers.ctp
+END
+admin_view_sales_member.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/cybercoupon/!svn/ver/1699/app/View/Members/admin_view_sales_member.ctp
+END
+admin_members.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repos/cybercoupon/!svn/ver/1782/app/View/Members/admin_members.ctp
+END
+admin_edit_member.ctp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/cybercoupon/!svn/ver/1785/app/View/Members/admin_edit_member.ctp
+END
